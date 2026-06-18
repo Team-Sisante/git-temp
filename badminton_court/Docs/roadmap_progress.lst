@@ -1,0 +1,256 @@
+<!-- AI ASSISTANT NOTE: Refer to this file and update statuses as tasks are completed. 
+                  : Do not remove this note!
+                  : Also do not remove the history of modifications.
+                  : [HARD RULE] When editing, ALWAYS preserve ALL existing content. Only ADD new entries or UPDATE existing ones. NEVER delete or shorten the history.
+                  : [RULE] Every roadmap document MUST be updated by the engineer after any significant decision, finding, code fix, or task completion to ensure project state transparency.
+                  : [RULE] You should always update these roadmap documents on our decisions, findings, fixes and next tasks after doing the updates/changes/modifications.
+-->
+
+# Badminton Court Migration Roadmap Progress
+# badminton_court/roadmap_progress.lst
+
+PHASE 2: GoCD PIPELINE INTEGRATION
+[DONE] 1. Authentication: Configure GoCD VM/Agent with GitHub PAT.
+[DONE] 2. Dynamic Generation: Update GoCD tasks to generate .env files on-the-fly.
+    - [DONE] Fix GitHub API pagination in generate-env.js.
+    - [DONE] Resolve GCP Secret Manager access for gocd-deployer service account.
+    - [DONE] Verify .env generation contains all required variables.
+[DONE] 3. Cleanup: Remove plain-text .env and .txt passphrase files.
+[DONE] 4. Agent SSH Key Provisioning: Automated via setup-agent-ssh.js. Agent now uses dedicated ssh key for VM connectivity.
+[DONE] 5. Agent GCP Secrets Access: Automated via setup-gcp-secrets-access.js. Service account key provisioned (creates gocd-server/secrets/gcp-key.json).
+
+PHASE 3: VALIDATION (Multi-Pipeline)
+[DONE] 1. Artifacts: Compile binary -> Build Images -> Push to ghcr.io.
+    - [DONE] Fixed compile.js for Docker-in-Docker.
+    - [DONE] Manual push from Cloud Shell verified images in ghcr.io (Initial test).
+    - [CANCELLED] Offloading Artifact build/push to Remote VM. Build stays on local GoCD agent.
+    - [DONE] First automated pipeline run – Secrets now accessible, compilation succeeded.
+    - [DONE] Binary Dockerfile corrected (--noreload, chmod +x, minimal runtime).
+    - [DONE] setup-binary.sh hardened (DB_HOST parameter, duplicate removal).
+    - [DONE] Hidden imports added to manage.py to fix ModuleNotFoundError for string‑referenced modules.
+    - [DONE] All custom management commands added to manage.py to guarantee PyInstaller inclusion (reset_django_db, load_test_data, etc.).
+[DONE] 2. Staging: Pull from ghcr.io -> Deploy Port 8001 (Manual Approval).
+    - [FIXED] Staging deploy failure caused by corrupted SECRET_KEY in GCP (overwritten with clean value via file‑based upload).
+    - [FIXED] Staging web container crash – POSTGRES_HOST was localhost instead of Docker service name db-test. Corrected in GitHub Environments.
+    - [VERIFIED] Staging pipeline passed after cleaning GCP secret and migrating to AES‑256‑GCM encrypted secrets.
+    - [FIXED] Git missing on VM due to apt lock race condition during boot. Startup script now waits for lock.
+    - [FIXED] VM now created with cloud-platform scope, ensuring gcloud access to Secret Manager.
+    - [FIXED] Conflicting DATABASE_URL variables permanently removed from all GitHub scopes and local .env files; generate-env.js now skips them automatically.
+    - [FIXED] Removed CYPRESS=true from web-staging service to prevent localhost fallback.
+    - [FIXED] database.py refactored: in_container variable includes staging/production.
+    - [FIXED] DB_HOST added to compose services, startup script uses it for database readiness check.
+    - [FIXED] HTTP Bad Request (400) resolved by passing ALLOWED_HOSTS via env_file and auto‑adding VM IP in generate-env.js.
+    - [FIXED] Forced HTTPS redirect avoided by including DEBUG=true in the staging container.
+    - [ADDED] nginx reverse proxy for HTTPS staging, fully parameterised via WEB_HTTPS_PORT env variable.
+    - [FIXED] nginx certificate missing – SCP certs/ directory now included in deploy.js when nginx is enabled.
+    - [FIXED] HTTPS connection refused – GCP firewall rule created for port 8444 (allow-web-https-staging).
+    - [VERIFIED] HTTPS working via https://136.109.209.69:8444/ (self‑signed certificate accepted).
+    - [FIXED] Firewall rule creation automated in deploy.js (idempotent check‑and‑create).
+    - [FIXED] Healthcheck replaced with process‑based check (pgrep) for immediate container health, ensuring nginx starts reliably.
+    - [CHANGED] Staging pipeline now requires manual approval, same as production.
+    - [FIXED] Staging HTTPS (8443) connectivity: Added missing `gocd-deploy-target` tag to VM instance.
+[DONE] 3. Production: Pull from ghcr.io -> Deploy Port 8000 (Manual/Supervised).
+    - [FIXED] Production deployment failure (resource exhaustion): Identified OOM on `e2-micro`.
+    - [ADDED] Production HTTPS setup: `nginx-production` added to compose; `deploy.js` refactored to support production nginx and firewall automation.
+[DONE] 4. Single‑VM port conflict resolved – Staging and production use separate Docker project names and incremented host ports.
+[DONE] 5. Production deployment dependency conflict resolved – added profiles: [staging] to web-staging and nginx-staging so they are not parsed when running production.    
+[DONE] 6. Production port conflict resolved – separate host ports assigned via docker-production environment variables.
+[DONE] 7. Production DB_HOST fix – added DB_HOST=db to web-production service to prevent waiting for db-test on startup.
+[DONE] 8. VM Stability & OOM Mitigation:
+    - [DONE] Disk Upgrade: Boot disk resized to 30GB (max Free Tier).
+    - [DONE] Swap Enablement: 4GB persistent swap space activated.
+    - [DONE] Automation: Disk resize and swap creation integrated into create-fresh-vm.js startup script.
+[DONE] 9. Pipeline Upgrade: Implement Artifact Promotion pattern (SHA-based Docker tagging, image tag injection).
+
+PHASE 4: MENU & TOOLING IMPROVEMENTS
+[DONE] 1. Clarify menu responsibility: …
+[DONE] 2. Remote staging environment access (in gocd-server menu): …
+[DONE] 3. VM recreation reliability fixes: …
+[DONE] 4. Menu error visibility:
+    - Added global try/catch in badminton_court menu to pause on unexpected errors.
+    - Handled missing `gh` binary and `GITHUB_TOKEN` conflicts in option 13.17 (GitHub CLI auth).
+    - Resolved readline/inquirer conflict in gocd-server menu; all trigger errors now pause and remain visible.
+    - Added `errorDisplayed = true` inside `sh()` function so any failed command holds the screen.
+[DONE] 5. Post‑creation setup roll‑up:
+    - Option 6.15 runs firewall, SSH keys, secret manager access, and VM reachability in one step. (install-tools-on-vm.js removed – redundant with startup script)
+    - Option 6.22 now calls create-deploy-vm.js, which orchestrates all granular steps (6.1‑6.7). No manual pipeline config update needed.
+[DONE] 6. Fix gcloud TLS CA bundle crash …
+[DONE] 7. Live error follow hardening: …
+[DONE] 8. Encryption migration (GPG → AES‑256‑GCM): …
+[DONE] 9. Pipeline task correction:
+    - Replaced SSH one‑liner that cloned entire repository onto the VM with the original `deploy.js` task.
+    - deploy.js uses SCP to copy only necessary files, keeping source code off the VM.
+[DONE] 10. VM startup script robustness:
+    - Added apt lock wait loop to prevent race condition with GCP guest agent.
+[DONE] 11. Artifacts pipeline task cleaned up:
+    - Extracted long inline bash into `badminton_court/Scripts/build-and-push.js`.
+[DONE] 12. Menu modularization (MAJOR):
+    - Giant menu.js split into `menu/` folder with individual modules (triggerPipeline, vmSetup, containerManagement, etc.).
+    - Slim dispatcher (`menu.js`) only handles loop, menu display, and dispatch.
+    - **Rule**: Every interactive menu option must have its own function in the appropriate module. Shared logic (e.g., container listing) is extracted into reusable modules.
+[DONE] 13. Granular script reuse:
+    - Created `containerList.js` – a single source of truth for remote container listing.
+    - Created `interactiveContainerAction.js` – generic module for listing containers, picking one, and running an SSH command.
+    - Used by viewLogs (6.16), quickLogCheck (2.1 pre‑check), restartService (6.17).
+[DONE] 14. Pre‑trigger VM check:
+    - Option 2.1 now offers an interactive container log check (via quickLogCheck) before triggering the pipeline.
+[DONE] 15. Deployment environment variable fix:
+    - deploy.js now loads `.env.docker` directly from the repo (no external dotenv dependency).
+[DONE] 16. Agent DNS fix:
+    - Added `dns: 8.8.8.8` to all agent services in docker-compose.yml to allow external registry access.
+[DONE] 17. SSH key permissions auto‑fix:
+    - deploy.js runs `chmod 600 /secret/agent-key` before SCP, preventing "Permission denied" errors.
+[DONE] 18. Static IP & cloud‑platform scope baked into VM creation:
+    - create-fresh-vm.js now manages static IP reservation and grants Secret Manager access automatically.
+[DONE] 19. Menu option renumbering & additions:
+    - 6.16 now interactive log viewer (with follow / one‑shot prompt).
+    - 6.17 now interactive restart.
+    - 6.21 now "Connect to VM via SSH" (interactive shell).
+    - 6.22 now "Create new VM & run full setup" (one‑step).
+    - 6.23 now "List all VMs".
+    - 6.24 now "Clean up Docker disk space on staging VM".
+    - 6.28 now "Enable/Verify Swap Space on VM".
+    - All options renumbered in logical workflow order.
+[DONE] 20. generate-env.js hardened against conflicting variables:
+    - Added SKIP_VARS filter to prevent DATABASE_URL, POSTGRES_PRISMA_URL, etc. from being written into generated .env files.
+    - Variables permanently removed from repository‑level and environment‑level GitHub variables.
+[DONE] 21. Binary deployment fixes:
+    - Dockerfile.binary added --noreload to CMD, chmod +x for binary.
+    - setup-binary.sh hardened: duplicate migrate/shell removed, DB_HOST variable support added.
+    - docker-compose.vm.yml: removed CYPRESS=true, added DB_HOST to web-staging and web-production.
+    - database.py refactored: is_docker → in_container, staging/production treated as container environments.
+[DONE] 22. Staging HTTPS reverse proxy added via nginx (parameterised).
+[DONE] 23. nginx certificate provisioning fixed – deploy.js now SCPs certs/ directory; fails if missing.
+[DONE] 24. ModuleNotFoundError for string‑referenced modules fixed by adding explicit imports in manage.py after django.setup().
+[DONE] 25. GCP firewall rule created for HTTPS port 8444 (allow-web-https-staging).
+[DONE] 26. HTTPS verified working on https://136.109.209.69:8444/ (accept self‑signed certificate).
+[DONE] 27. SSH key verification: setup-agent-ssh.js (option 6.3) already verifies key installation in step 7 and reports success/failure clearly.
+[DONE] 28. Pipeline trigger authentication: triggerPipeline.js updated to use GOCD_ADMIN_USERNAME/GOCD_ADMIN_PASSWORD (Basic Auth) for automatic login; falls back to token or manual cookie if admin creds are missing.
+[DONE] 29. Firewall rule automation: deploy.js now checks for and creates the allow-web-https-staging rule on every staging deployment (idempotent).
+[DONE] 30. Healthcheck for web-staging: replaced curl with pgrep to ensure immediate container health, fixing nginx dependency failure.
+[DONE] 31. Static files warning: static/.gitkeep committed to ensure the directory is bundled by PyInstaller, silencing staticfiles.W004 after the next binary rebuild.
+[DONE] 32. Local GCP authentication: GCP_SA_KEY_PATH env var added to both menus' .env files, pointing to the existing gocd-server/secrets/gcp-key.json. Both menus now automatically set GOOGLE_APPLICATION_CREDENTIALS on startup, enabling local gcloud commands (13.11, VM operations) without manual login.
+[DONE] 33. Option 13.11 improved: replaced two manual text prompts with a single inquirer list that maps to all four standard env files (.env.staging, .env.production, .env.docker, .env.dev).
+[DONE] 34. Multi‑project pipeline visibility: pay-sol-group now appears in GoCD dashboard after applying pipeline configuration (option 6.7).
+[DONE] 35. VM disk space recovery: menu option 6.24 (Clean up Docker disk space on staging VM) added, using SSH with agent key to prune unused containers/images/volumes and show disk usage.
+[DONE] 36. VM Docker daemon DNS & MTU resolution: permanent DNS (8.8.8.8) and MTU (1460) config added to VM startup script and enforced in deploy.js to ensure registry lookup reliability and optimal network performance on GCP.
+[DONE] 37. Web-staging healthcheck stabilization: replaced curl with pgrep to avoid 302 false negatives and ensure nginx always starts.
+[DONE] 38. Cypress environment‑aware testing (option 2.1):
+    - Replaced hardcoded .env.dev loading with an inquirer list (Development, Docker, Staging, Production).
+    - Uses CYPRESS_BASEURL exclusively from the selected env file (no defaults, no overrides).
+    - CYPRESS_ENV_FILE passed explicitly via execSync env option to guarantee propagation.
+    - cypress.config.js loads env variables from CYPRESS_ENV_FILE, cleans CYPRESS_BASEURL (strips comments, trims quotes), and uses it as baseUrl.
+    - No localhost fallback – missing CYPRESS_BASEURL throws a clear error.
+    - allowCypressEnv left enabled (default) so tests can access cy.env().
+[DONE] 39. SSH post‑quantum KEX warning suppressed:
+    - Added SSH_OPTS / SCP_OPTS variables in deploy.js with KexAlgorithms=+diffie-hellman-group14-sha256.
+    - Applied consistently to all ssh and scp commands in the pipeline deployment script.
+    - Also applied in menu helper functions (remoteDockerComposeUp, remoteDeleteImage).
+[DONE] 40. Pipeline speed optimization:
+    - Removed explicit `docker compose pull` from deploy.js – Compose auto-pulls when image digest changes.
+    - Removed `--force-recreate` from the pipeline – container restarts only when image digest changes.
+    - Config-only deployments now take ~30 seconds instead of 2+ minutes.
+    - Full container restart available via menu sections 16/17 when needed.
+[DONE] 41. Menu restructured for container & image management (badminton_court menu):
+    - Old section 16 (staging environment tasks) removed – now exclusively in gocd-server menu.
+    - Section 16: Start/Restart Staging Containers (16.1 web, 16.2 db-test, 16.3 redis, 16.4 mail, 16.5 nginx).
+    - Section 17: Start/Restart Production Containers (17.1 web, 17.2 db, 17.3 redis, 17.4 mail, 17.5 nginx).
+    - Section 18: Delete Staging Images (18.1–18.5, stops container then removes image).
+    - Section 19: Delete Production Images (19.1–19.5, stops container then removes image).
+    - Helper functions remoteDockerComposeUp and remoteDeleteImage use agent SSH key, no manual SSH needed.
+    - Note: Third-party images (postgres:14, redis:7-alpine, etc.) are shared – deleting one removes it for both environments.
+[DONE] 42. GCP service account secret reader permission:
+    - The local service account `gocd-agent-secrets@...` did not have `roles/secretmanager.secretAccessor`, causing `generate-env.js` to leave `<?secret?>` placeholders.
+    - Switched to personal account (`gcloud config set account`), enabled `cloudresourcemanager.googleapis.com`, granted the role. This is a project‑level IAM binding – permanent, survives VM recreation.
+    - Now `13.11` fills all secrets correctly, and the pipeline on the VM (which uses its own compute SA) already had the role.
+[DONE] 43. Environment file generation from templates (13.11):
+    - Created `templates/.env.staging.template` and `templates/.env.production.template` with section headers, comments, and `<?var?>`/`<?secret?>` placeholders.
+    - Updated `generate-env.js` to accept `--template` flag, replacing placeholders with values from GitHub (for `<?var?>`) and GCP (for `<?secret?>`).
+    - No defaults, no localhost fallbacks – missing values leave the placeholder and print a warning.
+    - Menu option 13.11 automatically passes the correct template for staging/production; dev/docker remain unchanged.
+    - Pipeline (`deploy.js`) also passes the template flag for staging/production, so remote `.env` files keep the beautiful structure.
+[DONE] 44. Migration scripts rewritten to use template placeholders:
+    - `migrate-environments.js` now reads the environment‑specific template and pushes only variables marked `<?var?>` to GitHub (no more keyword guessing).
+    - `migrate-to-gcp-secrets.js` reads all templates and uploads only secrets marked `<?secret?>` to GCP (no more guessing based on `PASSWORD`, `SECRET`, `TOKEN`, `KEY`).
+    - Both scripts use absolute paths resolved from `__dirname` so they work regardless of the current working directory.
+[DONE] 45. VM tool‑readiness wait script redesigned:
+    - Renamed `install-tools-on-vm.js` → `wait-for-vm-tools.js` to reflect its actual purpose (it no longer installs anything—the VM startup script handles all installations).
+    - Replaced blocking `execSync` calls with non‑blocking `spawn` with timeouts so the loop never freezes under heavy CPU/IO.
+    - Replaced log‑line polling with active readiness checks: `command -v docker && command -v node && command -v git`.
+    - The script streams the startup log for visibility and exits the moment the tools are detected.
+    - Removed all `apt-get install` commands from the script—the startup script is the single source of tool provisioning.
+    - Updated `create-deploy-vm.js` and menu references to use the new filename.
+[DONE] 46. VM provisioning time documented:
+    - Fresh VM creation (option 6.22) completes in ~21 minutes on an e2‑micro instance.
+    - The startup script installs ~500 MB of packages (Docker, Node, git, gcloud, etc.); this is the primary time factor.
+    - The new readiness check ensures the script never waits longer than necessary.
+[DONE] 47. Strict Environment Enforcement in deploy.js:
+    - Implemented interactive `waitAndExit()` helper that warns and pauses for "Enter" key on validation failure.
+    - Removed all silent defaults for ports, tags, and IPs.
+    - Sourced all configuration strictly from generated environment files or process env.
+[DONE] 48. VM Stability Automation:
+    - [DONE] Disk Upgrade: Integrated 30GB boot disk size into create-fresh-vm.js.
+    - [DONE] Swap Enablement: 4GB persistent swap space activated.
+    - [DONE] Automation: Disk resize and swap creation integrated into create-fresh-vm.js startup script.
+[DONE] 62. Cross-platform Docker Compose Support:
+    - Added helper function `getDockerCompose()` in menu.js to dynamically detect if 'docker compose' (v2) or 'docker-compose' (v1) should be used.
+    - Replaced most hardcoded 'docker-compose' string literals with the dynamic variable `dc`.
+    - Note: This ensures cross-platform compatibility without manual script changes.
+[DONE] 63. Template & Route Unification:
+    - Standardized all pages to use main_base.html, consolidated public and legal routes to root (/), unified navigation and header, fixed CSS styling, and resolved 404 errors by seeding static Page records.
+[DONE] 64. Safety Confirmations for Encryption/Decryption:
+    - Implemented mandatory "yes" confirmation prompt for menu options 13.5 and 13.6 to prevent accidental operations.
+[DONE] 65. Interactive SSH session fix:
+    - Updated sshToVM.js to use `spawn` with `stdio: inherit` for proper terminal interactivity, and added error pausing to ensure connection issues are visible to the user.
+[DONE] 66. Wrong Dockerfile target in build-and-push.js (PR #6):
+    - Root cause: `build-and-push.js` specified `Dockerfile` instead of `Dockerfile.binary` for the web image.
+    - Docker builds the last stage when no `--target` is given. The last stage in `Dockerfile` is `tunnel` (CMD `python tunnel.py`), not `web` (CMD `runserver`).
+    - Result: The ghcr.io web image ran ngrok tunnel instead of Django, so port 8000 was never listening.
+    - Fix: Changed `{ dockerfile: 'Dockerfile' }` to `{ dockerfile: 'Dockerfile.binary' }` in build-and-push.js line 118.
+[DONE] 67. Stale cached images not updated on deployment (PR #6):
+    - Root cause: `deploy.js` used `--pull missing` which only pulls images not already cached locally.
+    - After the first deployment, even when the artifacts pipeline pushed a corrected image to ghcr.io, the old cached image on the VM was reused.
+    - Fix: Changed `--pull missing` to `--pull always` in deploy.js so every deployment checks the registry for updated images.
+    - Note: This reverts the optimization in item #40, but correctness takes priority over speed. The ~30s penalty is acceptable for deployment reliability.
+[DONE] 68. VM resource exhaustion from mail container (PR #7):
+    - Root cause: `mail-staging` (Poste.io) consumed 430% CPU and 382MB RAM (39% of total) on the 1GB e2-micro VM.
+    - Symptoms: `docker ps -a` hung for 30+ seconds, load average 2.6/4.0/4.6, 40% IO wait from swapping.
+    - Fix: Added `mem_limit` to all 10 services in docker-compose.vm.yml:
+      - db-staging/production: 128m each
+      - redis: 64m
+      - mail-staging/production: 256m each
+      - web-staging/production: 256m each
+      - nginx-staging/production: 64m each
+    - Total per profile: ~768m, leaving headroom for OS and Docker daemon on the 1GB VM.
+[DONE] 69. Matplotlib font cache rebuild on every container start (PR #8):
+    - Root cause: `setup-binary.sh` set `MPLCONFIGDIR=/tmp/.matplotlib`, which is ephemeral and wiped on every container restart.
+    - Symptoms: "Matplotlib is building the font cache; this may take a moment" message delaying server startup.
+    - Fix: Installed `fontconfig` + `fonts-dejavu-core` in Dockerfile.binary and ran `fc-cache -f` during build to pre-build the system font cache.
+    - Set `ENV MPLCONFIGDIR=/app/.matplotlib` as a persistent path in the Dockerfile, and updated setup-binary.sh to use it.
+    - System font cache is baked into the image layer; matplotlib's own cache persists within the container lifecycle.
+
+[DONE] 70. Load Balancer & Path‑Based Routing Overhaul (humrine.com domain):
+    - Problem: Multiple apps (Humrine, Badminton) needed to coexist under a single domain (humrine.com) using both sub‑domains and path‑based routing. The initial load balancer setup only supported subdomain‑based backends, leading to 502 errors on the root domain and "Not Found" on sub‑site paths.
+    - Solution:
+        * Created a self‑healing `setup-load-balancer.js` that idempotently inspects and corrects all components (instance group, health checks, backend services, URL map, HTTPS proxy, forwarding rules, firewall rules, DNS).
+        * Added `certDomains` array to `loadbalancer.json` to generate multi‑domain Google‑managed certificates.
+        * Implemented certificate versioning: new versioned certs are created and attached only after becoming ACTIVE, avoiding downtime.
+        * Added `pathPrefix` support for backends, enabling routing like `/badminton-staging` and `/badminton-production` under the same host.
+        * URL map now correctly creates a bare‑domain host rule with the correct default backend and exact/wildcard path rules.
+        * Health checks automatically set the request path to `/prefix/` for path‑based backends.
+        * Backend services are forced to HTTP and correct named port, even if manually misconfigured.
+        * Firewall rules are now automatically created/updated for both health‑check probes (restricted sources) and actual traffic (0.0.0.0/0), with the correct `--rules` syntax.
+        * Nginx templates in `badminton_court` repository were updated to strip the path prefix and include a 301 redirect for bare paths.
+        * Environment variables (`WEB_HOST_PORT`, `NGINX_STAGING_HOST_PORT`, etc.) were added to avoid port conflicts between Humrine and Badminton containers on the same VM.
+        * Menu options added: 6.32 List SSL certs, 6.33 Delete certs, 6.34 Monitor cert status, 6.35 Show active cert, 6.36 Cert domain status.
+    - Result: All three sites (humrine.com, staging.humrine.com, app.humrine.com) and the two path‑based apps (/badminton-staging, /badminton-production) are now operational. The load balancer is fully self‑healing; running option 6.30 at any time corrects inconsistencies without downtime.
+
+[PENDING] 71. Badminton Staging Nginx Placeholder Leak (502 on /badminton-staging)
+    - Finding: The badminton nginx staging container repeatedly crashes because the generated config still contains the literal placeholder `__WEB_HOST_PORT__` instead of the actual port 8001.
+    - Root cause: The `badminton_court` deploy script (`deploy.js`) reads `WEB_HOST_PORT` from the generated env file and uses the value to replace `__WEB_HOST_PORT__` in the template. However, the pipeline is not yet picking up the updated script.
+    - Temporary fix: Manually wrote a correct config to the host file and recreated the container. Site works until next pipeline run.
+    - Permanent fix: Commit the updated `deploy.js` (with `WEB_HOST_PORT` and `__WEB_HOST_PORT__` replacements) to the branch used by the staging pipeline and re‑run the pipeline.
+    - Next: After pipeline success, verify https://humrine.com/badminton-staging/ loads and then proceed to Cypress testing.
+
+---
+*Last Updated: May 31, 2026*
