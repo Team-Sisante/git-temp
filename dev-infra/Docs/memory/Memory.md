@@ -1,0 +1,31 @@
+# Project Memory Index
+
+- **AI Behavior Safety Protocol:** See [Memory_AIBehaviorSafetyProtocol.md](./Memory_AIBehaviorSafetyProtocol.md) for mandatory agent-level safety check procedures.
+- **Current Issue (humrine_site Pipeline Failure):** See [Memory_CurrentIssue.md](./Memory_CurrentIssue.md) for the diagnosis and plan to fix the missing IMAGE_TAG in the production pipeline.
+- **GoCD Infrastructure Safety:** See [Memory_GoCDInfrastructureSafety.md](./Memory_GoCDInfrastructureSafety.md) for critical warnings about destructive menu options and data persistence mechanisms.
+- **GitHub Env Migration Fix:** See [Memory_GitHubEnvMigrationFix.md](./Memory_GitHubEnvMigrationFix.md) for the fix for the HTTP 307 redirect error when migrating environment variables.
+- **GoCD API Migration:** See [Memory_GoCDApiMigration.md](./Memory_GoCDApiMigration.md) for the long-term migration plan for GoCD API usage from deprecated legacy endpoints to the modern REST API.
+- **Cross-Platform Diagnostic Wrapper:** See [Memory_CrossPlatformDiagnostic.md](./Memory_CrossPlatformDiagnostic.md) for details on the Node.js wrapper pattern used to make pipeline diagnostic scripts cross-platform.
+- **Cross-Platform Compatibility:** See [Memory_CrossPlatformCompatibility.md](./Memory_CrossPlatformCompatibility.md) for established patterns for path handling, command execution, and venv activation.
+- **Dynamic Host Trust:** See [Memory_DynamicHostTrust.md](./Memory_DynamicHostTrust.md) for patterns to dynamically trust Cloud Shell proxy URLs.
+- **Pipeline Configuration Pattern:** See [Memory_PipelineConfigurationPattern.md](./Memory_PipelineConfigurationPattern.md) for patterns to add diagnostic steps to GoCD pipelines via `cruise-config.xml`.
+- **GitHub Organization Migration (team-sisante):** See [Memory_GithubOrgMigration.md](./Memory_GithubOrgMigration.md) for details on the migration to the team-sisante organization and the required configuration updates.
+- **Branching Strategy (PR Rule):** See [Memory_BranchingStrategy.md](./Memory_BranchingStrategy.md) for rules on direct merges to master and how to enforce Pull Request workflows.
+- **GHCR Connection Refused (Artifacts Pipeline):** [ACTIVE TASK] See [Memory_ArtifactsPipelineGhcrFailure.md](./Memory_ArtifactsPipelineGhcrFailure.md) for the investigation and plan to resolve the persistent `connection refused` error during image push.
+- **Certificate Automation Setup:** See [Memory_CertSetupAutomation.md](./Memory_CertSetupAutomation.md) for details on the cross-platform headless automation pattern implemented for GoCD SSL certificates (option 4.12).
+- **Posteio Email Issue:** See [Memory_PosteioEmailIssues.md](./Memory_PosteioEmailIssues.md) for investigation and resolution of the external email delivery failure (direct relay injection).
+- **Menu Automation Pattern:** See [Memory_MenuAutomationPattern.md](./Memory_MenuAutomationPattern.md) for details on the command-line dispatching pattern added to menu.js.
+- **Docker Env Loading:** See [Memory_DockerComposeEnvLoading.md](./Memory_DockerComposeEnvLoading.md) for details on correctly loading and merging multiple .env files with docker compose.
+- **Environment File Conventions:** See [Memory_EnvFileConventions.md](./Memory_EnvFileConventions.md) for details on the environment file structure, secret masking conventions, and multi-file loading rules.
+- **Linux System Setup:** See [Memory_LinuxSystemSetup.md](./Memory_LinuxSystemSetup.md) for details on the Linux system setup automation script and menu integration.
+- **Menu Exit & Cancellation:** See [Memory_MenuExitError.md](./Memory_MenuExitError.md) for details on fixing the readline ERR_USE_AFTER_CLOSE error and the 415 pipeline cancellation issue.
+- **GHCR Push Failure:** See [Memory_GhcrPushFailure.md](./Memory_GhcrPushFailure.md) for details on the 'connection refused' error during docker push.
+- **Web-Dev Container Stability:** See [Memory_WebDevStability.md](./Memory_WebDevStability.md) for details on diagnosing and resolving environment variable and database connectivity issues in the web-dev container.
+- **Humrine Site CSRF Fix:** See [Memory_HumrineCsrfFix.md](./Memory_HumrineCsrfFix.md) for the fix regarding dynamic origin trust for Cloud Shell URLs.
+- **GHCR Auth Failure:** See [Memory_PipelineAuthIssue.md](./Memory_PipelineAuthIssue.md) for details on fixing the pipeline GHCR authentication failure using Node.js stdin.
+- **Maintenance Page Implementation:** See [Memory_MaintenancePageImplementation.md](./Memory_MaintenancePageImplementation.md) for details on the badminton_court maintenance page serving configuration.
+- **Humrine Site Pipeline Failure & Password Fix:** See [Memory_HumrinePipelineFailure.md](./Memory_HumrinePipelineFailure.md) for the diagnosis of the deployment failure and password consolidation.
+- **Humrine Site Maintenance Strategy:** See [Memory_HumrineMaintenanceStrategy.md](./Memory_HumrineMaintenanceStrategy.md) for the strategy to fix the site downtime and serve the custom maintenance page.
+- **CI/CD Deployment & Artifact Pattern:** See [Memory_DeploymentPattern.md](./Memory_DeploymentPattern.md) for conventions on when to rebuild artifacts vs. when infrastructure-only changes suffice.
+- **History Repo Push:** See [Memory_HistoryRepoPush.md](./Memory_HistoryRepoPush.md) for details on committing and pushing changes to the internal Gemini history repository.
+
