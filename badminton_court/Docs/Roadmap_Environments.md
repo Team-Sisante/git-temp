@@ -715,23 +715,32 @@ The deployment is split into three distinct pipelines to ensure isolation and co
 ---
 *Last Updated: June 19, 2026*
 
-### 63. Poste.io Setup Wizard & SMTP Auth — Staging Environment Extension
-- **Problem:** After the dev fix (entry #62) was merged, the same Cypress feature (`posteio-flow.feature`) had to run against staging. The dev command was hard-coded to `https://localhost:8443`. Three staging-specific failures appeared: (1) Cypress hit `ENOTFOUND mail-staging` because Docker-internal hostnames are unreachable from the Cypress host; (2) Poste.io setup wizard returned HTTP 500 when the hostname field was filled with the VM's raw IP `35.198.231.9` — Poste.io's installer requires a real domain (`aeropace.com`), not a bare IP; (3) `cy.resetPosteioDb` tried `docker-compose down mail-staging`, but the Cypress host can't reach the VM's docker socket — the volume was never wiped and leftover state persisted.
-- **Root Causes:**
-    1. **Hard-coded dev URLs in Cypress commands** — `setupPosteio.cy.js` visited `https://localhost:8443` unconditionally; no dispatch on `ENVIRONMENT`.
-    2. **Step definitions silently defaulted to dev** — `common.js` did `Cypress.env('ENVIRONMENT') || 'dev'`, violating Roadmap #52 (no silent defaults). A misconfigured staging run could silently run dev assertions.
-    3. **Hostname field filled with raw IP** — Poste.io's `server.ini` writer rejects IP-only hostnames and returns HTTP 500.
-    4. **No API-based reset for staging** — Dev reset goes through `docker-compose down` + `docker volume rm` on the local docker socket. Staging is on a remote VM; the Cypress runner can't reach the VM's docker socket directly.
+### 63. Poste.io Setup Wizard & SMTP Auth — Staging Environment Extension (FINAL)
+- **Problem:** The Poste.io setup wizard (`cy.setupPosteio()`) failed with HTTP 500 when run against staging. After multiple iterations, nine cascading root causes were diagnosed and fixed. The final working state requires DNS, firewall, memory, env vars, and Cypress command changes all working together.
+- **Root Causes (Nine, Cascading):**
+    1. **Domain Conflict (primary 500 cause):** Deploy script creates `humrine.com` domain via console. Setup wizard tries to create the same domain → 500.
+    2. **Admin Mailbox Conflict:** Deploy script creates `aeropaceadmin@humrine.com` via console. Setup wizard tries to create the same admin → conflict.
+    3. **`POSTE_DOMAIN` vs Mail Server Hostname Confusion:** `POSTE_DOMAIN` is the email domain (`humrine.com`), NOT the mail server hostname (`mail.humrine.com`). These are distinct concepts.
+    4. **No DNS Record for `mail.humrine.com`:** Setup wizard's connectivity tests timeout without a DNS A record.
+    5. **Mail Ports Not Open on GCP Firewall:** Ports 25, 110, 143, 465, 587, 993, 995, 4190 were not open.
+    6. **Container Memory Limit Too Low (256MB):** Rspamd was OOM-killed, making the container unhealthy.
+    7. **Staging Reset Command API Path Bug:** `reset_posteio_db_staging.py` used `/api/v1/...` instead of `/admin/api/v1/...`. The 301 redirect stripped auth headers.
+    8. **SSL Verification Failure in PyInstaller Binary:** `requests` respected `REQUESTS_CA_BUNDLE` env var, overriding `session.verify = False`.
+    9. **`configure-poste-relay.js` Single-Attempt Failure:** Relay config used `runCmd` (single attempt) instead of `runCmdWithRetry`.
 - **Solution:**
-    - **`setupPosteio.cy.js`:** Added staging URL dispatch (`GCP_VM_IP` + `MAIL_HTTPS_HOST_PORT`). The hostname field now reads `POSTE_DOMAIN` (`aeropace.com`) instead of the raw IP. This fixes the HTTP 500.
-    - **`cypress/support/step_definitions/common.js`:** Removed the `|| 'dev'` silent default. Now throws immediately if `ENVIRONMENT` is missing or unknown. Each environment-specific step dispatches explicitly via `if (env === 'dev') ... else if (env === 'staging') ... else throw`. See `Memory_StrictEnvironmentValidation.md` and `Memory_EnvironmentDispatchProtocol.md`.
-    - **New staging reset path:** Added `court_management/management/commands/reset_posteio_db_staging.py` (calls `docker rm -f` + `docker volume rm -f` locally on the VM; skips the admin mailbox so the admin account persists across test runs). Exposed via Django views `reset_posteio_database_staging` and `create_mailbox` in `test_database.py`.
-    - **New Cypress commands:** `cy.resetPosteioDbStaging` (calls the Django API endpoint, then polls the staging HTTPS URL for readiness) and `cy.createRegularUserMailboxStaging` (calls the Django `create_mailbox` view to provision a mailbox without going through the Poste.io admin UI).
+    - **`setupPosteio.cy.js`:** Delete admin mailbox + domain via API before running the setup wizard. Use `mail.${POSTE_DOMAIN}` for the hostname field (not `POSTE_DOMAIN` directly).
+    - **`reset_posteio_db_staging.py`:** Fix API path (`/admin/api/v1/`), add `session.trust_env = False` + `verify=False` (SSL fix), skip admin mailbox in deletion (preserve across test cycles).
+    - **`configure-poste-relay.js`:** Use `runCmdWithRetry` for relay config call.
+    - **`setup-firewall-rules.js`:** Add 8 mail service ports (25, 110, 143, 465, 587, 993, 995, 4190).
+    - **`docker-compose.vm.yml`:** Change `mem_limit: 256m` to `mem_limit: 512m` for mail-staging and mail-production.
+    - **`menu.js`:** Add 16.7/17.7 (wipe volume + recreate, with confirmation + 90s countdown). Add secure env export for 16.1-16.7 and 17.1-17.7 (no .env files on VM disk).
+    - **DNS:** Create `mail.humrine.com` A record in GCP Cloud DNS → `35.198.231.9`.
+    - **Env vars:** `POSTE_DOMAIN=humrine.com` (email domain), `POSTE_HOSTNAME=mail-staging` (Docker-internal), mail server hostname = `mail.humrine.com` (derived).
 - **Environment:** Staging (GCP VM `35.198.231.9`, Linux host, Docker Engine). Dev remains on the dev path; production pending.
-- **Benefit:** Cypress `posteio-flow.feature` and `auth-flow.feature` now run against both dev and staging from a single feature file. Environment drift is impossible — `ENVIRONMENT` is required, not defaulted. Staging admin mailbox persists across test cycles, so the setup wizard only needs to run once per staging deploy.
-- **Documentation:** Created `Memory_PosteioStagingSetupWizardFix.md`, `Memory_EnvironmentDispatchProtocol.md`, `Memory_StrictEnvironmentValidation.md`, and `Docs/Trouble-shooting/Poste.io setup wizard fails to complete in staging.md`.
+- **Benefit:** Cypress `posteio-flow.feature` passes all 3 scenarios in staging. SMTP auth works (`{"status":"ok","protocol":"SSL:465","host":"mail-staging"}`). SMTP relay configured (outbound mail via Gmail). Environment drift is impossible — `ENVIRONMENT` is required, not defaulted. Staging admin mailbox persists across test cycles. Mail server is properly reachable via DNS (`mail.humrine.com`) with all required ports open.
+- **Documentation:** Updated `Memory_PosteioStagingSetupWizardFix.md`, `Poste.io setup wizard fails to complete in staging.md`, `Memory_MenuOptionIndex.md` (added 16.7/17.7), this roadmap entry.
 - **Related Roadmap entries:** #52 (no silent defaults — enforced by this fix), #62 (dev variant of the same issue).
-
+- **Status:** Staging FIXED and VERIFIED. All 3 Cypress scenarios pass. SMTP auth works. Production pending.
 
 ---
-*Last Updated: June 19, 2026*
+*Last Updated: June 20, 2026*
