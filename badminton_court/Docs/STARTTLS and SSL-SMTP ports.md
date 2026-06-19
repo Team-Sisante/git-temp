@@ -80,7 +80,7 @@ Once the `mail-test` container successfully advertises STARTTLS on port 587 (via
   EMAIL_USE_SSL=True
   EMAIL_USE_TLS=False
   EMAIL_HOST=localhost
-  EMAIL_HOST_USER=admin@aeropace.com
+  EMAIL_HOST_USER=aeropaceadmin@humrine.com
   EMAIL_HOST_PASSWORD=StrongPassword123!
   ```
 - The custom `wait_for_mail_ready` management command uses `SMTP_SSL` to test connectivity on port 465.

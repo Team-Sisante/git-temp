@@ -77,7 +77,7 @@ Check `.env.dev` has the POSTE variables:
 POSTE_PROTOCOL=https
 POSTE_HOSTNAME=localhost
 POSTE_PORT=8443
-POSTE_API_USER=admin@aeropace.com
+POSTE_API_USER=aeropaceadmin@humrine.com
 POSTE_ADMIN_PASSWORD=StrongPassword123!
 ```
 

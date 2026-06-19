@@ -81,10 +81,10 @@ Staging:
     "ENVIRONMENT": "staging",
     "GCP_VM_IP": "35.198.231.9",
     "MAIL_HTTPS_HOST_PORT": "8446",
-    "POSTE_DOMAIN": "aeropace.com",
+    "POSTE_DOMAIN": "humrine.com",
     "DJANGO_API_URL": "https://35.198.231.9/api",
     "TEST_AUTH_TOKEN": "...",
-    "POSTE_ADMIN_EMAIL": "admin@aeropace.com",
+    "POSTE_ADMIN_EMAIL": "admin@humrine.com",
     "POSTE_ADMIN_PASSWORD": "..."
 }
 ```

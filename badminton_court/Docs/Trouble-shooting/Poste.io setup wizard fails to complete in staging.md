@@ -78,7 +78,7 @@ Required `cypress.env.json` (staging profile):
     "GCP_VM_IP": "35.198.231.9",
     "MAIL_HTTPS_HOST_PORT": "8446",
     "POSTE_DOMAIN": "aeropace.com",
-    "POSTE_ADMIN_EMAIL": "admin@aeropace.com",
+    "POSTE_ADMIN_EMAIL": "aeropaceadmin@humrine.com",
     "POSTE_ADMIN_PASSWORD": "..."
 }
 ```

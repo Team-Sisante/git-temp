@@ -70,16 +70,16 @@
    # Postal SMTP settings (for Django to send emails)  
    EMAIL_HOST=smtp.gmail.com  
    EMAIL_PORT=587  
-   EMAIL_HOST_USER=admin@aeropace.com  
+   EMAIL_HOST_USER=aeropaceadmin@humrine.com  
    EMAIL_HOST_PASSWORD=[FILL UP]
    SMTP_FROM_NAME=Badminton Court Management  
-   DEFAULT_FROM_EMAIL=admin@aeropace.com  
+   DEFAULT_FROM_EMAIL=aeropaceadmin@humrine.com  
    SMTP_CERT_PATH=/postal/config/tls/cert.pem  
    SMTP_KEY_PATH=/postal/config/tls/key.pem  
    SIGNING_KEY_PATH=/postal/config/postal/signing.key
 
    # Admin user settings for Postal
-   ADMIN_EMAIL=admin@aeropace.com
+   ADMIN_EMAIL=aeropaceadmin@humrine.com
    ADMIN_FIRST_NAME=Admin
    ADMIN_LAST_NAME=User
    ADMIN_PASSWORD=[FILL UP]
@@ -189,16 +189,16 @@
    # Postal SMTP settings (for Postal itself to send emails)  
    EMAIL_HOST=smtp.gmail.com  
    EMAIL_PORT=587  
-   EMAIL_HOST_USER=admin@aeropace.com  
+   EMAIL_HOST_USER=aeropaceadmin@humrine.com  
    EMAIL_HOST_PASSWORD=[FILL UP]   
    SMTP_FROM_NAME=Badminton Court Management  
-   DEFAULT_FROM_EMAIL=admin@aeropace.com  
+   DEFAULT_FROM_EMAIL=aeropaceadmin@humrine.com  
    SMTP_CERT_PATH=/postal/config/tls/cert.pem  
    SMTP_KEY_PATH=/postal/config/tls/key.pem  
    SIGNING_KEY_PATH=/postal/config/postal/signing.key  
 
    # Admin user settings for Postal
-   ADMIN_EMAIL=admin@aeropace.com
+   ADMIN_EMAIL=aeropaceadmin@humrine.com
    ADMIN_FIRST_NAME=Admin
    ADMIN_LAST_NAME=User
    ADMIN_PASSWORD=[FILL UP]  

@@ -48,7 +48,7 @@ In staging, `aeropace.com` is local (so test emails don't leak to the real domai
    DJANGO_SETTINGS_MODULE=badminton_court.settings python manage.py shell -c "
    from django.core.mail import send_mail
    try:
-       send_mail('Test', 'Body', 'admin@aeropace.com', ['regularuser@aeropace.com'], fail_silently=False)
+       send_mail('Test', 'Body', 'aeropaceadmin@humrine.com', ['regularuser@aeropace.com'], fail_silently=False)
        print('Email sent successfully')
    except Exception as e:
        print(f'Email failed: {e}')
