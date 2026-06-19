@@ -695,3 +695,22 @@ The deployment is split into three distinct pipelines to ensure isolation and co
 
 ---
 *Last Updated: May 31, 2026*
+
+### 62. Poste.io Setup Wizard & SMTP Auth Stability (Dev Environment)
+- **Problem:** The Poste.io setup wizard (cy.setupPosteio()) failed to complete during Cypress tests in the dev environment. After submitting the first install form, Poste.io stayed on /admin/install/server. Additionally, the test_check_smtp_auth Django endpoint timed out even though direct Python SMTP auth succeeded.
+- **Root Causes (Multiple, Cascading):**
+    1. Volume Not Properly Removed: cy.resetPosteioDb() ran docker-compose down + docker volume rm. On Docker Desktop for Windows, the volume lock is sometimes held, causing silent removal failures and leftover corrupted data.
+    2. Stale Browser Session/Cookies: Previous setup attempts left session cookies, causing the setup wizard to fail silently.
+    3. Multi-Step Install Wizard Not Handled: Poste.io setup wizard has multiple steps. The old performSetup function only submitted the FIRST form, then expected to be on /admin/box/.
+    4. Excessive Wait Causing Socket Timeout: A cy.wait(30000) in setupPosteio caused ESOCKETTIMEDOUT.
+    5. SMTP Auth Timeout in Django Endpoint: test_check_smtp_auth.py used timeout=10. Poste.io SSL handshake on port 465 can take 15-25 seconds. smtplib.SMTP_SSL with timeout parameter doesn't always work during SSL handshake on Windows.
+- **Solution:**
+    - database.cy.js: Replaced docker-compose down with docker rm -f + docker volume rm -f. Added verification to ensure the volume is actually gone (retries up to 10 times). Added verification that /data is empty. Added dynamic polling for readiness.
+    - setupPosteio.cy.js: Added cy.clearCookies(), cy.clearLocalStorage(), cy.clearAllSessionStorage() BEFORE cy.visit(). Removed the cy.wait(30000). Added a step-through loop that keeps clicking submit on install pages until it reaches the login page.
+    - test_check_smtp_auth.py: Increased timeout to 30s. Added socket.setdefaulttimeout(30). Added retry logic (3 attempts, 10s delay) for Dovecot auth plugin warmup.
+- **Environment:** Development only (Windows host, Docker Desktop, Git Bash). Staging/production use API-based reset (reset_posteio_db_staging) and are unaffected by the Docker Desktop volume lock issue.
+- **Benefit:** Poste.io setup wizard now completes reliably in the dev environment. SMTP auth endpoint no longer times out. posteio-flow.feature and auth-flow.feature pass consistently.
+- **Documentation:** Created Memory_PosteioDevSetupWizardFix.md and Docs/Trouble-shooting/Poste.io setup wizard fails to complete in dev.md.
+
+---
+*Last Updated: June 19, 2026*
