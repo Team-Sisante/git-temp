@@ -30,9 +30,6 @@ If the document you are sharing contains a literal 4-backtick sequence (e.g., yo
 - 3-backtick markdown fence (````markdown` with 3 backticks) — no copy button; premature close when content has inner triple backticks
 - 4-backtick markdown fence — renders as plain page text, NO code block at all
 - 3-backtick text fence with inner triple backticks — premature close
-- `Write` tool — opens a tabbed window / download link in the IM (violates "no download links" rule)
-- `Edit` tool — opens a tabbed window in the IM
-- `Bash` tool with `cat >` / `cat >>` / `sed -i` / any file-modifying command — opens a tabbed window in the IM
 
 ## Allowed Formats
 
@@ -42,16 +39,35 @@ If the document you are sharing contains a literal 4-backtick sequence (e.g., yo
 - 3-backtick python fence — FOR SINGLE PYTHON SNIPPETS
 - 3-backtick json fence — FOR SINGLE JSON SNIPPETS
 
-## File Modification Protocol (NEW — 2026-06-19)
+## File Modification Protocol (Updated 2026-06-19)
 
 When a memory file or any project file needs to be updated:
 
-1. NEVER use the `Write` tool. It opens a tabbed window in the IM.
-2. NEVER use the `Edit` tool. It opens a tabbed window in the IM.
-3. NEVER use `Bash` with `cat >`, `cat >>`, `sed -i`, `echo >`, or any file-writing command. The output opens a tabbed window in the IM.
+1. NEVER use the `Write` tool. It opens a tabbed window in the IM and does not auto-close.
+2. NEVER use the `Edit` tool. It opens a tabbed window in the IM and does not auto-close.
+3. NEVER use `Bash` with `cat >`, `cat >>`, `sed -i`, `echo >`, or any file-WRITING command. The output opens a tabbed window in the IM and does not auto-close.
 4. INSTEAD: Display the complete updated file contents inline as a 4-backtick `text` block. The user will copy it with the copy button and paste it into their editor to save.
 
-The only allowed `Bash` uses are read-only commands (ls, grep, cat for reading, find) that do NOT modify files — and only when the user has explicitly asked to inspect something. Even then, prefer displaying content inline rather than running `Bash` if the result would open a tabbed window.
+## Read-Only Tool Use (Updated 2026-06-19)
+
+Tools that open tabbed windows MAY be used for READ-ONLY analysis (vision, image analysis, file reads for inspection, grep, find, etc.) under the following conditions:
+
+1. The tool call is for READ-ONLY purposes — it does NOT modify any file.
+2. The tabbed window is CLOSED immediately after the result is obtained. The AI assistant should not leave the tab open or rely on the user to close it.
+3. The result is then summarized inline in the chat as plain text (or as a 4-backtick `text` block if the result is itself a document/code snippet).
+4. If the tool call is for image/vision analysis, the AI assistant should summarize what was seen in plain text in the next chat message — NOT redirect the user to the tabbed window.
+
+### Allowed Read-Only Tools
+- `Bash` with read-only commands: `ls`, `grep`, `find`, `cat` (for reading), `head`, `tail`, `wc`, `file`, `stat`
+- `Read` tool (for reading file contents — the output opens a tab, but it is read-only and should be closed immediately)
+- Vision tools (`z-ai vision` CLI, VLM SDK) for analyzing uploaded images — the AI assistant reads the result, closes the tab, and summarizes inline
+- `Glob` tool (for finding files by pattern)
+- `Grep` tool (for searching file contents)
+
+### Forbidden Tools (Always)
+- `Write` tool — opens a tabbed window that doesn't auto-close; use inline 4-backtick `text` block instead
+- `Edit` tool — opens a tabbed window that doesn't auto-close; use inline 4-backtick `text` block instead
+- `Bash` with file-WRITING commands (`cat >`, `cat >>`, `sed -i`, `echo >`, `printf >`, etc.) — same reason
 
 ## Self-Check Before Every Document Share
 
@@ -59,8 +75,7 @@ Before pasting a markdown document into the chat, ask:
 1. Is the outer fence 4 backticks with the `text` tag? If no, fix it.
 2. Does the document end with a 4-backtick closing fence on its own line? If no, fix it.
 3. Is the entire document in ONE message (not split across messages)? If no, restructure.
-4. Am I about to use `Write`, `Edit`, or file-modifying `Bash`? If yes, STOP. Display inline instead.
-5. Does the document content contain any literal 4-backtick sequence? If yes, replace with a word description ("four backticks followed by the word text") to avoid prematurely closing the outer fence.
+4. Does the document content contain any literal 4-backtick sequence? If yes, replace with a word description ("four backticks followed by the word text") to avoid prematurely closing the outer fence.
 
 ## Self-Check Before Every File Modification
 
@@ -69,8 +84,15 @@ Before modifying any file, ask:
 2. Is there a way to display the change inline as a 4-backtick `text` block instead? If yes, do that.
 3. Has the user explicitly authorized a file-modifying tool call? If no, do not modify files.
 
+## Self-Check Before Every Read-Only Tool Use
+
+Before calling a read-only tool that opens a tabbed window (vision, Read, etc.), ask:
+1. Is this for READ-ONLY purposes (no file modification)? If no, STOP and use the file-modification protocol instead.
+2. Will I be able to close the tab immediately after getting the result? If yes, proceed.
+3. Will I summarize the result inline in the next chat message (not redirect the user to the tab)? If yes, proceed.
+
 ## Status
 - Established: 2026-06-18 (original)
-- Updated: 2026-06-19 (final format confirmed: 4-backtick text fence; file-modification tools forbidden; literal 4-backtick sequences inside document content are forbidden because they close the outer fence early)
+- Updated: 2026-06-19 (final format confirmed: 4-backtick text fence; file-modification tools forbidden; read-only tools allowed if tab is closed immediately)
 - Applies to: All AI assistants sharing markdown/code content in this IM environment
-- Enforcement: Self-check before every document share AND before every file-modifying tool call
+- Enforcement: Self-check before every document share, file modification, AND read-only tool use
