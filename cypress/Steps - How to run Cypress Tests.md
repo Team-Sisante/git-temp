@@ -29,5 +29,9 @@ ENVIRONMENT=development CYPRESS_video=false npx cypress run --spec cypress/e2e/a
 Additional flags:
 - --headed
   - runs in the Cypress Interactive Web Interface.
-  
+- --config watchForFileChanges=false
+  - to get better stacktraces in Cypress, you can add this exact flag and check the screenshot at cypress/screenshots.
+- --noexit
+  - prevents the browser from exiting.  
+
 
