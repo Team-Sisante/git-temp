@@ -31,7 +31,9 @@ Additional flags:
   - runs in the Cypress Interactive Web Interface.
 - --config watchForFileChanges=false
   - to get better stacktraces in Cypress, you can add this exact flag and check the screenshot at cypress/screenshots.
-- --noexit
+- --no-exit
   - prevents the browser from exiting.  
+- --runner-ui  
+  - shows the Cypress command log in a separate window, so you can see each step as it executes and where it fails.
 
 
