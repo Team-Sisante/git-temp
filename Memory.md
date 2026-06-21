@@ -39,6 +39,7 @@ All applications are deployed to a single GCP VM (e2-small, 30GB disk, 4GB swap)
 - **Memory_MarkdownFormattingProtocol.md** — Use bash code blocks for sharing files
 - **Memory_CodeBlockCopyProtocol.md** — Complete functions only, no shortcuts
 - **Memory_UIBehaviorProtocol.md** — No new windows; display inline
+- **Memory_URLs_of_git-temp_repo_files.md** — URLs of git-temp repo files
 
 ### Application Documentation
 - **badminton_court/Docs/Roadmap_Environments.md** — Master roadmap with all architectural decisions
