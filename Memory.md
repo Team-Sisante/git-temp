@@ -26,6 +26,7 @@ All applications are deployed to a single GCP VM (e2-small, 30GB disk, 4GB swap)
 ### Central Memory Files (dev-infra/Docs/memory/)
 - **Memory.md** — Index of all memory files
 - **Memory_AIBehaviorSafetyProtocol.md** — Mandatory pre-action checks for AI assistants
+- **Memory_AI_Deception_Incident–DeepSeek_Instant_Mode.md** — AI Deception Incedent about URL reading
 - **Memory_BranchingStrategy.md** — No direct merges to master; PRs required
 - **Memory_CrossPlatformCompatibility.md** — Path handling, venv activation, Docker Compose
 - **Memory_DeploymentPattern.md** — Artifact promotion strategy (when to rebuild vs deploy)

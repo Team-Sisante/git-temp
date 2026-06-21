@@ -7,6 +7,7 @@
 
 ## Central Memory Files (dev-infra/Docs/memory/)
 - [Memory_AIBehaviorSafetyProtocol.md](https://github.com/Team-Sisante/git-temp/blob/master/dev-infra/Docs/memory/Memory_AIBehaviorSafetyProtocol.md)
+- [Memory_AI_Deception_Incident–DeepSeek_Instant_Mode.md](https://github.com/Team-Sisante/git-temp/blob/master/dev-infra/Docs/memory/Memory_AI_Deception_Incident–DeepSeek_Instant_Mode.md)
 - [Memory_BranchingStrategy.md](https://github.com/Team-Sisante/git-temp/blob/master/dev-infra/Docs/memory/Memory_BranchingStrategy.md)
 - [Memory_CrossPlatformCompatibility.md](https://github.com/Team-Sisante/git-temp/blob/master/dev-infra/Docs/memory/Memory_CrossPlatformCompatibility.md)
 - [Memory_DeploymentPattern.md](https://github.com/Team-Sisante/git-temp/blob/master/dev-infra/Docs/memory/Memory_DeploymentPattern.md)
