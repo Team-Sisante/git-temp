@@ -40,6 +40,7 @@
 - [Memory_HumrineSiteMenuProvisions.md](https://github.com/Team-Sisante/git-temp/blob/master/humrine_site/Docs/memory/Memory_HumrineSiteMenuProvisions.md)
 - [Memory_HumrineSiteStagingSecurityFix.md](https://github.com/Team-Sisante/git-temp/blob/master/humrine_site/Docs/memory/Memory_HumrineSiteStagingSecurityFix.md)
 - [Memory_HumrineSiteDeploymentRollbackIncident.md](https://github.com/Team-Sisante/git-temp/blob/master/humrine_site/Docs/memory/Memory_HumrineSiteDeploymentRollbackIncident.md)
+- [Memory_HumrineSiteCrashLoopChownIncident.md](https://github.com/Team-Sisante/git-temp/blob/master/humrine_site/Docs/memory/Memory_HumrineSiteCrashLoopChownIncident.md)
 
 ## Badminton Court Documentation (badminton_court/Docs/)
 - [Amazon_S3_Backup_Restore.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Amazon_S3_Backup_Restore.md)
