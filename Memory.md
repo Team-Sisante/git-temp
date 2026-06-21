@@ -47,6 +47,7 @@ All applications are deployed to a single GCP VM (e2-small, 30GB disk, 4GB swap)
 - **gocd-server/Docs/** — GoCD setup, deployment, and GCP hosting docs
 - **humrine_site/Docs/** — Humrine site specific documentation
 - **humrine_site/Docs/memory/Memory_HumrineSiteStagingSecurityFix.md** — Resolved staging CSRF/is_secure() issues; removed DEBUG from env files
+- **humrine_site/Docs/memory/Memory_HumrineSiteDeploymentRollbackIncident.md** — DeepSeek AI caused outage by adding volume mounts during rollback instead of reverting code
 
 ---
 
