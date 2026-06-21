@@ -46,6 +46,7 @@ All applications are deployed to a single GCP VM (e2-small, 30GB disk, 4GB swap)
 - **badminton_court/Docs/Trouble-shooting/** — Troubleshooting guides for common issues
 - **gocd-server/Docs/** — GoCD setup, deployment, and GCP hosting docs
 - **humrine_site/Docs/** — Humrine site specific documentation
+- **humrine_site/Docs/memory/Memory_HumrineSiteStagingSecurityFix.md** — Resolved staging CSRF/is_secure() issues; removed DEBUG from env files
 
 ---
 
