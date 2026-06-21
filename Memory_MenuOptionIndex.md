@@ -153,6 +153,32 @@ Same secure env export pattern as 16.1-16.6, but using `.env.production` instead
 
 ---
 
+## Menu 20.x: `humrine_site/Scripts/menu.js` (GCP VM Management)
+
+The humrine_site management menu. Section 20 contains operations that run directly on the GCP VM.
+
+| Option | Action | Side Effects |
+|--------|--------|--------------|
+| 20.1   | Full Docker system reset (`docker system prune -af --volumes`) | ⚠ DESTROYS everything — all containers, images, volumes, build cache |
+| **20.2** | **Fix staging DB permissions** | Runs `chown -R appuser:appuser /app/data` inside `humrine-web-staging` and restarts the container |
+| **20.3** | **Fix production DB permissions** | Same as 20.2 for `humrine-web-production` |
+| **20.4** | **Run staging migrations** | Executes `python manage.py migrate` inside `humrine-web-staging` |
+| **20.5** | **Run production migrations** | Executes `python manage.py migrate` inside `humrine-web-production` |
+| 0      | Back to main menu | None |
+
+### Notes on 20.2 / 20.3 (Fix DB permissions)
+- The `humrine_site` SQLite database is stored on a persistent Docker volume (`db_data`).
+- When the volume was first created, the `/app/data` directory was owned by `root`, preventing the `appuser` from writing.
+- These options fix ownership in-place and restart the container so Django can open the database.
+- Safe to run any time — idempotent.
+
+### Notes on 20.4 / 20.5 (Run migrations)
+- Runs Django's `manage.py migrate` inside the running container.
+- Use after a deploy that introduces new models or fields — otherwise the site may return 500 errors.
+- Safe to run repeatedly — Django migrations are idempotent.
+
+---
+
 ## How to Use This Memory
 
 When the user says something like "run 6.2" or "do option 16.7":
@@ -162,8 +188,9 @@ When the user says something like "run 6.2" or "do option 16.7":
    - 6.x → GCP VM Management menu
    - 16.x → badminton_court staging containers
    - 17.x → badminton_court production containers
+   - 20.x → humrine_site GCP VM management
 2. Find the option in the table.
-3. Confirm with the user before running destructive operations (1.12, 1.13, 1.14, 16.7, 17.7).
+3. Confirm with the user before running destructive operations (1.12, 1.13, 1.14, 16.7, 17.7, 20.1).
 4. Read the script's source if you need to understand its exact behavior — the table is a summary, not a substitute for the code.
 
 ## When to Update This Memory
@@ -174,7 +201,7 @@ When the user says something like "run 6.2" or "do option 16.7":
 
 ## Status
 - Established: 2026-06-19
-- Updated: 2026-06-19 (added 16.7/17.7 wipe volume + recreate; added 6.2 firewall notes with mail ports)
+- Updated: 2026-06-21 (added Menu 20.x — humrine_site GCP VM Management options 20.2–20.5)
 - Applies to: All interactive menus in the project
 - Enforced by: Code review checklist (PRs that add/change menu options must update this file)
 
