@@ -36,4 +36,9 @@ Additional flags:
 - --runner-ui  
   - shows the Cypress command log in a separate window, so you can see each step as it executes and where it fails.
 
+## What I usually use:
+```bash
+ENVIRONMENT=development CYPRESS_video=false npx cypress run --spec cypress/e2e/posteio/posteio-flow.feature --browser chrome --env TAGS="@setup_posteio" --headed --no-exit
 
+ENVIRONMENT=development CYPRESS_video=false npx cypress run --spec cypress/e2e/authentication/auth-flow.feature --browser chrome --env TAGS="@register" --headed --no-exit
+```
