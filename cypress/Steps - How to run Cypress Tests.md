@@ -38,7 +38,7 @@ Additional flags:
 
 ## What I usually use:
 ```bash
-ENVIRONMENT=development CYPRESS_video=false npx cypress run --spec cypress/e2e/posteio/posteio-flow.feature --browser chrome --env TAGS="@setup_posteio" --headed --no-exit
+ENVIRONMENT=development CYPRESS_video=false npx cypress run --spec cypress/e2e/posteio/posteio-flow.feature --browser chrome --env TAGS="@setupposteio" --headed --no-exit
 
 ENVIRONMENT=development CYPRESS_video=false npx cypress run --spec cypress/e2e/authentication/auth-flow.feature --browser chrome --env TAGS="@register" --headed --no-exit
 ```
