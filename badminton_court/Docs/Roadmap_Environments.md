@@ -56,15 +56,23 @@ For detailed problem diagnoses and step‑by‑step fixes, follow the links to t
 | 2026‑05‑31 | Nginx placeholder bug fixed | `Nginx-Placeholder-Fix.md` |
 | 2026‑06‑19 | Poste.io dev setup stabilised | `Poste.io-Dev-Setup-Wizard.md` |
 | 2026‑06‑20 | Poste.io staging fully operational | `Poste.io-Staging-Setup-Wizard.md` |
-| 2026‑06‑25 | Social media app menu (16.2) | `June 2026 Fixes.md` |
-| 2026‑06‑25 | DB permission repair automation | `June 2026 Fixes.md` |
-| 2026‑06‑25 | Health check host headers | `June 2026 Fixes.md` |
-| 2026‑06‑25 | Deploy script image tag reliability | `June 2026 Fixes.md` |
-| 2026‑06‑25 | SMTP check timeout fix | `June 2026 Fixes.md` |
-| 2026‑06‑25 | Cypress env variable resolution | `June 2026 Fixes.md` |
-| 2026‑06‑25 | /court path routing correction | `June 2026 Fixes.md` |
-| 2026‑06‑25 | User profile completion notice | `June 2026 Fixes.md` |
-| 2026‑06‑25 | Troubleshooting documentation created | `June 2026 Fixes.md` |
+| 2026‑06‑25 | Social media app menu (16.2) | `Social Media App Configuration Menu.md` |
+| 2026‑06‑25 | DB permission repair automation | `Database Permission Repair Automation.md` |
+| 2026‑06‑25 | Health check host headers | `Load Balancer Health Check Host Headers.md` |
+| 2026‑06‑25 | Deploy script image tag reliability | `Deployment Script Image Tag Reliability.md` |
+| 2026‑06‑25 | SMTP check timeout fix | `SMTP Check Timeout Fix.md` |
+| 2026‑06‑25 | Cypress env variable resolution | `Cypress Environment Variable Resolution.md` |
+| 2026‑06‑25 | /court path routing correction | `court Path Routing Correction.md` |
+| 2026‑06‑25 | User profile completion notice | `User Profile Completion Notice.md` |
+| 2026‑06‑25 | Troubleshooting documentation created | `Troubleshooting Documentation Creation.md` |
+
+---
+
+## Pending Improvements
+
+| #    | Task | Reference |
+|------|------|-----------|
+| 81   | Cypress real‑browser demo tests for presentations | `Docs/Trouble-shooting/Cypress-Real-Browser-Demo-Tests.md` |
 
 ---
 

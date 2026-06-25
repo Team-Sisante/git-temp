@@ -113,7 +113,11 @@ For step‑by‑step guides and resolved issues, see the `Docs/Trouble-shooting/
 - [x] **6.3 – Verify Ads Display Correctly**  
   ads.txt file created and deployed. AdSense re‑review requested.  
   *(Awaiting final approval; content improvements planned to meet policy.)*
-
+  
+- [ ] **6.4 – Publish Original Content & Re‑submit AdSense Review**
+  - Create 3–5 original blog posts (500+ words each) with unique images.
+  - Ensure pages with AdSense have sufficient unique content.
+  - Re‑submit the site for AdSense review once content is live.
 ---
 
 ## Phase 7: Data Persistence & Backup (Affiliate Database)

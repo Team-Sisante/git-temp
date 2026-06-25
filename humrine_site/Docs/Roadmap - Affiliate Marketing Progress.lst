@@ -52,6 +52,7 @@ PHASE 6: GOOGLE ADSENSE INTEGRATION
 [DONE] 6.1 – Signed up for Google AdSense; publisher ID added.
 [DONE] 6.2 – AdSense Auto Ads script placed in base.html.
 [DONE] 6.3 – ads.txt created and deployed; AdSense re-review requested (awaiting approval). Content improvements planned.
+[PENDING] 6.4 – Publish original content and re-submit AdSense review.
 
 PHASE 7: DATA PERSISTENCE & BACKUP (AFFILIATE DATABASE)
 [DONE] 7.1 – Created backup_db and restore_db Django management commands.
