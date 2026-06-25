@@ -60,6 +60,9 @@
 - [STARTTLS_and_SSL-SMTP_ports.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/STARTTLS_and_SSL-SMTP_ports.md)
 - [System_Architecture.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/System_Architecture.md)
 - [Testing_Strategy.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Testing_Strategy.md)
+- [Decision-Log.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Decision-Log.md)
+- [Roadmap_Environments.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Roadmap_Environments.md)
+- [roadmap_progress.lst](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/roadmap_progress.lst)
 
 ### Badminton Court Memory (badminton_court/Docs/memory/)
 - [Memory_AI_Architecture_Rules.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/memory/Memory_AI_Architecture_Rules.md)
@@ -91,3 +94,6 @@
 - [PyInstaller_Import_Error.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Trouble-shooting/PyInstaller_Import_Error.md)
 - [SSL_Certificate_Expired.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Trouble-shooting/SSL_Certificate_Expired.md)
 - [Windows_Path_Too_Long.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Trouble-shooting/Windows_Path_Too_Long.md)
+- [Load Balancer & Path‑Based Routing.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Trouble-shooting/Load%20Balancer%20&%20Path‑Based%20Routing.md)
+- [Poste.io Setup Wizard & SMTP Auth (Staging).md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Trouble-shooting/Poste.io%20Setup%20Wizard%20&%20SMTP%20Auth%20(Staging).md)
+- [June 2026 Fixes.md](https://github.com/Team-Sisante/git-temp/blob/master/badminton_court/Docs/Trouble-shooting/June%202026%20Fixes.md)

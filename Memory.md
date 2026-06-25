@@ -43,18 +43,19 @@ All applications are deployed to a single GCP VM (e2-small, 30GB disk, 4GB swap)
 - **Memory_URLs_of_git-temp_repo_files.md** — URLs of git-temp repo files
 
 ### Application Documentation
-- **badminton_court/Docs/Roadmap_Environments.md** — Master roadmap with all architectural decisions
-- **badminton_court/Docs/STARTTLS and SSL-SMTP ports.md** — Use port 465 (SMTPS) not 587
-- **badminton_court/Docs/Trouble-shooting/** — Troubleshooting guides for common issues
-- **gocd-server/Docs/** — GoCD setup, deployment, and GCP hosting docs
-- **humrine_site/Docs/** — Humrine site specific documentation
+- **badminton_court/Docs/Roadmap_Environments.md** – Master roadmap (multi‑environment migration)
+- **badminton_court/Docs/Decision-Log.md** – Architectural decisions (binary compilation, pipeline design, machine type)
+- **badminton_court/Docs/Trouble-shooting/** – Troubleshooting guides for common issues
+- **badminton_court/Docs/STARTTLS and SSL-SMTP ports.md** – Use port 465 (SMTPS) not 587
+- **gocd-server/Docs/** – GoCD setup, deployment, and GCP hosting docs
+- **humrine_site/Docs/** – Humrine site specific documentation (includes affiliate marketing roadmap)
 - **humrine_site/Docs/memory/Memory_HumrineSiteStagingSecurityFix.md** — Resolved staging CSRF/is_secure() issues; removed DEBUG from env files
 - **humrine_site/Docs/memory/Memory_HumrineSiteDeploymentRollbackIncident.md** — DeepSeek AI caused outage by adding volume mounts during rollback instead of reverting code
 - **humrine_site/Docs/memory/Memory_HumrineSiteCrashLoopChownIncident.md** — z.ai GLM-5.1 caused crash loop by forcing runtime chown in non-root container
 
 ---
 
-## 🏆 The 10 Golden Rules
+## 🏆 The 11 Golden Rules
 
 These rules are derived from incident reports and memory files. Violating them has caused outages and data loss in the past.
 
@@ -88,6 +89,8 @@ Menu option 1.6 runs `go.js` which executes `docker compose down -v` and `docker
 ### 10. Use Port 465 for SMTP
 Poste.io's STARTTLS on port 587 is unreliable. Always use port 465 (SMTPS) with `EMAIL_USE_SSL=True`. This works out-of-the-box. (STARTTLS and SSL-SMTP ports.md)
 
+### 11. Keep Roadmaps Concise
+Roadmap documents track high‑level progress and architectural decisions. Detailed problem/solution histories belong in separate `Docs/Trouble-shooting/` files. Link to those files from the roadmap.
 ---
 
 ## 🔗 Quick Reference Links
@@ -108,6 +111,10 @@ Poste.io's STARTTLS on port 587 is unreliable. Always use port 465 (SMTPS) with 
 - [UI Behavior Protocol](dev-infra/Docs/memory/Memory_UIBehaviorProtocol.md)
 - [Badminton Court Roadmap](badminton_court/Docs/Roadmap_Environments.md)
 - [STARTTLS and SSL-SMTP Ports](badminton_court/Docs/STARTTLS%20and%20SSL-SMTP%20ports.md)
+- [Badminton Court Decision Log](badminton_court/Docs/Decision-Log.md)
+- [Badminton Court Trouble-shooting – Load Balancer & Path‑Based Routing](badminton_court/Docs/Trouble-shooting/Load%20Balancer%20&%20Path‑Based%20Routing.md)
+- [Badminton Court Trouble-shooting – Poste.io Staging](badminton_court/Docs/Trouble-shooting/Poste.io%20Setup%20Wizard%20&%20SMTP%20Auth%20(Staging).md)
+- [Badminton Court Trouble-shooting – June 2026 Fixes](badminton_court/Docs/Trouble-shooting/June%202026%20Fixes.md)
 
 ---
 

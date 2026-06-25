@@ -254,3 +254,23 @@ PHASE 4: MENU & TOOLING IMPROVEMENTS
 
 ---
 *Last Updated: May 31, 2026*
+
+[DONE] 70. Load Balancer & Path‑Based Routing Overhaul (humrine.com domain).
+[PENDING] 71. Badminton Staging Nginx Placeholder Leak (502 on /badminton-staging).
+
+---
+*Last Updated: May 31, 2026*
+
+ADDITIONS – JUNE 2026:
+
+[DONE] 72. Social Media App Configuration Menu (badminton_court option 16.2).
+[DONE] 73. Database Permission Repair Automation (badminton_court menu options 11.1 / 14.1).
+[DONE] 74. Load Balancer Health Check Host Headers (setup-load-balancer.js update).
+[DONE] 75. Deployment Script Image Tag Reliability (GHCR SHA discovery, pre‑deploy container removal).
+[DONE] 76. SMTP Check Timeout Fix (environment‑aware timeout in test_check_smtp_auth).
+[DONE] 77. Cypress Environment Variable Resolution (auto‑load base env file for .env.test.*).
+[DONE] 78. /court Path Routing Correction (FORCE_SCRIPT_NAME + path('', include(...))).
+[DONE] 79. User Profile Completion Notice (UX improvement for booking flow).
+
+---
+*Last Updated: June 25, 2026*

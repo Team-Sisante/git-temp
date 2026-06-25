@@ -1,12 +1,14 @@
 <!-- AI ASSISTANT NOTE: Always refer to this document and update it as tasks are completed or architecture changes. Do not remove this note! Also do not remove the history of modifications. [HARD RULE] When editing, ALWAYS preserve ALL existing content. Only ADD new entries or UPDATE existing ones. NEVER delete or shorten the history.
 [RULE] Every roadmap document MUST be updated by the engineer after any significant decision, finding, code fix, or task completion to ensure project state transparency.
 [RULE] You should always update these roadmap documents on our decisions, findings, fixes and next tasks after doing the updates/changes/modifications.
+[RULE] This roadmap document tracks architectural plans and high‑level progress. Detailed problem/solution write‑ups belong in the corresponding `Docs/Trouble-shooting/` documents. Keep entries concise; link to the relevant trouble‑shooting file for full context.
 -->
 
 # Roadmap: Affiliate Marketing Integration (Lazada & Shopee)
-# affiliate_marketing/Docs/Roadmap.md
+# Source: Docs/Roadmap-Affiliate Marketing.md
 
-This document outlines the plan to integrate affiliate marketing into the Django web app, with initial focus on Lazada, Shopee, and (optionally) Involve Asia, using a clean link‑tracking layer.
+This document outlines the plan to integrate affiliate marketing into the Django web app, with initial focus on Lazada, Shopee, and (optionally) Involve Asia, using a clean link‑tracking layer.  
+For step‑by‑step guides and resolved issues, see the `Docs/Trouble-shooting/` directory.
 
 ---
 
@@ -40,32 +42,35 @@ This document outlines the plan to integrate affiliate marketing into the Django
   *Involve Asia publisher account approved and used as immediate alternative.*
 
 - [ ] **2.2 – First Product Links**  
-  - One real Shopee link generated via Involve Asia (`shopee-test`).  
-  - Still need to build up to 5–10 links from each platform.
+  - Several real Shopee links created via Involve Asia (sacred‑heart‑shirt, chick‑cordless‑fan, etc.).  
+  - Still need to build up to 10 links from each platform.
 
 - [x] **2.3 – Disclosure & Compliance**  
   Added FTC‑style disclosure notice on deals page. All affiliate links use `rel="nofollow sponsored"`.
 
-- [ ] **2.4 – Cookie & Policy Considerations**  
-  Review whether click tracking stores personal data under GDPR/Philippine law; if needed, implement consent mechanism or IP anonymisation.
+- [x] **2.4 – Cookie & Policy Considerations**  
+  IP anonymization implemented (store only first 3 octets). Cookie consent banner added. Privacy policy updated to describe affiliate tracking.
+
+- [x] **SEO**  
+  Sitemap and robots.txt created and submitted. Google Search Console verified.
 
 ---
 
 ## Phase 3: Involve Asia Integration (Optional, Multi‑Merchant API)
 
 - [x] **3.1 – Involve Asia Publisher Account**  
-  - Account created, property Humrine.com approved.  
-  - Shopee PH and Lazada Talent (PH) campaigns applied; Shopee auto‑approved, Lazada pending.
+  Account created, property Humrine.com approved.  
+  Shopee PH and Lazada Talent (PH) campaigns applied; Shopee auto‑approved, Lazada pending.
 
-- [ ] **3.2 – API Client in Django**  
-  - Service module `involve_api.py` written (with caching).  
-  - **BLOCKED:** API key not available yet; request submitted to Involve, under review (up to 48 working hours).
+- [x] **3.2 – API Client in Django**  
+  Service module `involve_api.py` written (with caching).  
+  API key received and configured.
 
-- [ ] **3.3 – Dynamic Product Catalogue (Optional)**  
-  Build a view that pulls live products from Involve Asia and renders them, each wrapped with our cloaked redirect.
+- [x] **3.3 – Dynamic Product Catalogue (Optional)**  
+  Built a view that pulls live products from Involve Asia and renders them, each wrapped with our cloaked redirect.
 
-- [ ] **3.4 – Fallback & Error Handling**  
-  Graceful degradation if the API is unavailable; show cached data or a placeholder.
+- [x] **3.4 – Fallback & Error Handling**  
+  Dynamic deals view now falls back to curated database links when the API is unavailable.
 
 ---
 
@@ -99,14 +104,29 @@ This document outlines the plan to integrate affiliate marketing into the Django
 
 ## Phase 6: Google AdSense Integration
 
-- [ ] **6.1 – AdSense Account & Approval**  
-  Sign up for Google AdSense, add humrine.com, wait for review and approval.
+- [x] **6.1 – AdSense Account & Approval**  
+  Signed up for Google AdSense, added humrine.com, publisher ID received.
 
-- [ ] **6.2 – Add Ad Code to Base Template**  
-  Insert Auto Ads script in `<head>` of `base.html`.
+- [x] **6.2 – Add Ad Code to Base Template**  
+  Auto Ads script inserted in `<head>` of `base.html`.
 
-- [ ] **6.3 – Verify Ads Display Correctly**  
-  Ensure ads appear without breaking layout; check policy compliance (no prohibited content).
+- [x] **6.3 – Verify Ads Display Correctly**  
+  ads.txt file created and deployed. AdSense re‑review requested.  
+  *(Awaiting final approval; content improvements planned to meet policy.)*
+
+---
+
+## Phase 7: Data Persistence & Backup (Affiliate Database)
+
+- [x] **7.1 – Backup & Restore Commands**  
+  Created `backup_db` and `restore_db` Django management commands.
+
+- [x] **7.2 – Menu Integration**  
+  Added backup/restore options (12.9, 12.10) to `Scripts/menu.js`.
+
+- [x] **7.3 – Persistent Volume for SQLite**  
+  Named volume `db_data` mounted at `/app/data`. Startup command ensures correct ownership.  
+  Database now survives container recreations and deployments.
 
 ---
 
@@ -118,4 +138,4 @@ This document outlines the plan to integrate affiliate marketing into the Django
 - **Involve Asia priority:** If we later need dynamic product feeds, Involve Asia’s unified API is the preferred route over scraping or per‑merchant APIs.
 
 ---
-*Last Updated: 2026-06-13*
+*Last Updated: 2026-06-25*
