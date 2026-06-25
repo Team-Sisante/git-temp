@@ -1,13 +1,17 @@
 <!-- AI ASSISTANT NOTE: Always refer to this document and update it as tasks are completed or architecture changes. Do not remove this note! Also do not remove the history of modifications. [HARD RULE] When editing, ALWAYS preserve ALL existing content. Only ADD new entries or UPDATE existing ones. NEVER delete or shorten the history.
 [RULE] Every roadmap document MUST be updated by the engineer after any significant decision, finding, code fix, or task completion to ensure project state transparency.
 [RULE] You should always update these roadmap documents on our decisions, findings, fixes and next tasks after doing the updates/changes/modifications.
-[RULE] This roadmap document tracks architectural plans and high‑level progress. Detailed problem/solution write‑ups belong in the corresponding `Docs/Trouble-shooting/` documents. Keep entries concise; link to the relevant trouble‑shooting file for full context.
+[RULE] This roadmap document tracks architectural plans, decisions, and high‑level progress for the **affiliate marketing integration of humrine_site** only. Detailed problem/solution write‑ups belong in the corresponding `Docs/Trouble-shooting/` documents. Keep entries concise; link to the relevant trouble‑shooting file for full context.
+[RULE] Unrelated information (e.g., other apps, generic infrastructure, menus) must not be added to this roadmap. Create separate roadmap documents for each application or infrastructure component as needed.
 -->
 
 # Roadmap: Affiliate Marketing Integration (Lazada & Shopee)
-# Source: Docs/Roadmap-Affiliate Marketing.md
+# humrine_site/Docs/Roadmap-Affiliate Marketing.md
 
-This document outlines the plan to integrate affiliate marketing into the Django web app, with initial focus on Lazada, Shopee, and (optionally) Involve Asia, using a clean link‑tracking layer.  
+> **Central AI memory & protocol:** [git-temp/Memory.md](https://github.com/Team-Sisante/git-temp/blob/master/Memory.md)  
+> **Troubleshooting guides:** `humrine_site/Docs/Trouble-shooting/` directory
+
+This document tracks the plan to integrate affiliate marketing into the Django web app, with initial focus on Lazada, Shopee, and (optionally) Involve Asia, using a clean link‑tracking layer.  
 For step‑by‑step guides and resolved issues, see the `Docs/Trouble-shooting/` directory.
 
 ---
@@ -43,7 +47,7 @@ For step‑by‑step guides and resolved issues, see the `Docs/Trouble-shooting/
 
 - [ ] **2.2 – First Product Links**  
   - Several real Shopee links created via Involve Asia (sacred‑heart‑shirt, chick‑cordless‑fan, etc.).  
-  - Still need to build up to 10 links from each platform.
+  - Still need to bring the total to 10 (currently ~5).
 
 - [x] **2.3 – Disclosure & Compliance**  
   Added FTC‑style disclosure notice on deals page. All affiliate links use `rel="nofollow sponsored"`.
@@ -113,11 +117,12 @@ For step‑by‑step guides and resolved issues, see the `Docs/Trouble-shooting/
 - [x] **6.3 – Verify Ads Display Correctly**  
   ads.txt file created and deployed. AdSense re‑review requested.  
   *(Awaiting final approval; content improvements planned to meet policy.)*
-  
-- [ ] **6.4 – Publish Original Content & Re‑submit AdSense Review**
-  - Create 3–5 original blog posts (500+ words each) with unique images.
-  - Ensure pages with AdSense have sufficient unique content.
-  - Re‑submit the site for AdSense review once content is live.
+
+- [ ] **6.4 – Publish Original Content & Re‑submit AdSense Review**  
+  - Created Blog app with article management and multi‑image support.  
+  - Published first article (Aeropace Back to School reach‑out).  
+  - More articles needed (3‑5 total) before re‑submitting review.
+
 ---
 
 ## Phase 7: Data Persistence & Backup (Affiliate Database)
@@ -134,12 +139,30 @@ For step‑by‑step guides and resolved issues, see the `Docs/Trouble-shooting/
 
 ---
 
+## Phase 8: Build & Deployment Optimization
+
+- [x] **8.1 – Faster Docker Builds**  
+  Optimised the humrine_site Dockerfile to install Python dependencies before copying source code.  
+  Created a pre‑built builder base image (`Dockerfile.base`) to eliminate repeated system/package installation.  
+  Reduced artifacts pipeline time from ~17 minutes to ~4 minutes (cached).
+
+- [x] **8.2 – Binary Compilation for humrine_site**  
+  Compiled humrine_site into a standalone binary using PyInstaller, matching the badminton_court approach.  
+  Resolved dynamic linker issues in the runtime image (`libc6`, `ld‑linux` symlink).  
+  Removed the broken `command:` override from `docker-compose.vm.yml` so the entrypoint works correctly.
+
+- [x] **8.3 – Template Tag Inclusion in Binary**  
+  Added `blog/templatetags` directory to PyInstaller data collection to fix missing `{% load blog_tags %}` errors causing 502 on home page.
+
+---
+
 ## Key Decisions & Architecture Notes
 
 - **Link ownership:** All outbound affiliate links go through our own redirect (`/out/<slug>/`). This gives us full click analytics independent of the networks.
 - **Merchant flexibility:** The `TrackedAffiliateLink` model supports any merchant (Lazada, Shopee, or Involve). We can add more later without code changes.
 - **Cookie vs. IP tracking:** Clicks are logged with IP and user‑agent for spam filtering, but privacy‑first approach should be documented.
 - **Involve Asia priority:** If we later need dynamic product feeds, Involve Asia’s unified API is the preferred route over scraping or per‑merchant APIs.
+- **Binary compilation:** humrine_site now produces a standalone binary like badminton_court, enabling faster deployments and a consistent runtime environment.
 
 ---
-*Last Updated: 2026-06-25*
+*Last Updated: 2026-06-26*

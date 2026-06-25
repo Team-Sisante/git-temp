@@ -4,11 +4,11 @@
                   : [HARD RULE] When editing, ALWAYS preserve ALL existing content. Only ADD new entries or UPDATE existing ones. NEVER delete or shorten the history.
                   : [RULE] Every roadmap document MUST be updated by the engineer after any significant decision, finding, code fix, or task completion to ensure project state transparency.
                   : [RULE] You should always update these roadmap documents on our decisions, findings, fixes and next tasks after doing the updates/changes/modifications.
-                  : [RULE] This file tracks high‑level completion status only. For detailed troubleshooting steps, see the corresponding document in `Docs/Trouble-shooting/`.
+                  : [RULE] This file tracks only high‑level completion status. Detailed narratives are in `Docs/Trouble-shooting/`.
 -->
 
 # Affiliate Marketing Roadmap Progress
-# Source: Docs/Roadmap - Affiliate Marketing Progress.lst
+# humrine_site/Docs/Roadmap - Affiliate Marketing Progress.lst
 
 PHASE 1: CORE AFFILIATE LINK TRACKING SYSTEM
 [DONE] 1.1 – Create TrackedAffiliateLink and AffiliateClick models.
@@ -51,8 +51,8 @@ PHASE 5: OWN AFFILIATE PROGRAM (FUTURE)
 PHASE 6: GOOGLE ADSENSE INTEGRATION
 [DONE] 6.1 – Signed up for Google AdSense; publisher ID added.
 [DONE] 6.2 – AdSense Auto Ads script placed in base.html.
-[DONE] 6.3 – ads.txt created and deployed; AdSense re-review requested (awaiting approval). Content improvements planned.
-[PENDING] 6.4 – Publish original content and re-submit AdSense review.
+[DONE] 6.3 – ads.txt created and deployed; AdSense re-review requested (awaiting approval).
+[PENDING] 6.4 – Publish original content (3‑5 posts) and re‑submit AdSense review.
 
 PHASE 7: DATA PERSISTENCE & BACKUP (AFFILIATE DATABASE)
 [DONE] 7.1 – Created backup_db and restore_db Django management commands.
@@ -60,5 +60,10 @@ PHASE 7: DATA PERSISTENCE & BACKUP (AFFILIATE DATABASE)
 [DONE] 7.3 – Persistent SQLite volume mount implemented (named volume + startup ownership fix).
          - Menu repair options (11.1, 14.1) available if permissions ever regress.
 
+PHASE 8: BUILD & DEPLOYMENT OPTIMIZATION
+[DONE] 8.1 – Optimised Dockerfile for pip caching; created builder base image for faster builds.
+[DONE] 8.2 – humrine_site compiled into standalone binary; fixed runtime linker issues.
+[DONE] 8.3 – Fixed missing blog templatetags in binary build (caused 502 on home page).
+
 ---
-*Last Updated: 2026-06-25*
+*Last Updated: 2026-06-26*
