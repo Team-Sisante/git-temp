@@ -45,13 +45,21 @@ All applications are deployed to a single GCP VM (e2-small, 30GB disk, 4GB swap)
 ### Application Documentation
 - **badminton_court/Docs/Roadmap_Environments.md** – Master roadmap (multi‑environment migration)
 - **badminton_court/Docs/Decision-Log.md** – Architectural decisions (binary compilation, pipeline design, machine type)
-- **badminton_court/Docs/Trouble-shooting/** – Troubleshooting guides for common issues
+- **badminton_court/Docs/Trouble-shooting/** – Troubleshooting guides (one per issue)
+  - `Load Balancer & Path‑Based Routing.md`
+  - `Poste.io Setup Wizard & SMTP Auth (Staging).md`
+  - `Social Media App Configuration Menu.md`
+  - `Database Permission Repair Automation.md`
+  - `Load Balancer Health Check Host Headers.md`
+  - `Deployment Script Image Tag Reliability.md`
+  - `SMTP Check Timeout Fix.md`
+  - `Cypress Environment Variable Resolution.md`
+  - `court Path Routing Correction.md`
+  - `User Profile Completion Notice.md`
+  - `Troubleshooting Documentation Creation.md`
 - **badminton_court/Docs/STARTTLS and SSL-SMTP ports.md** – Use port 465 (SMTPS) not 587
 - **gocd-server/Docs/** – GoCD setup, deployment, and GCP hosting docs
 - **humrine_site/Docs/** – Humrine site specific documentation (includes affiliate marketing roadmap)
-- **humrine_site/Docs/memory/Memory_HumrineSiteStagingSecurityFix.md** — Resolved staging CSRF/is_secure() issues; removed DEBUG from env files
-- **humrine_site/Docs/memory/Memory_HumrineSiteDeploymentRollbackIncident.md** — DeepSeek AI caused outage by adding volume mounts during rollback instead of reverting code
-- **humrine_site/Docs/memory/Memory_HumrineSiteCrashLoopChownIncident.md** — z.ai GLM-5.1 caused crash loop by forcing runtime chown in non-root container
 
 ---
 
@@ -114,8 +122,14 @@ Roadmap documents track high‑level progress and architectural decisions. Detai
 - [Badminton Court Decision Log](badminton_court/Docs/Decision-Log.md)
 - [Badminton Court Trouble-shooting – Load Balancer & Path‑Based Routing](badminton_court/Docs/Trouble-shooting/Load%20Balancer%20&%20Path‑Based%20Routing.md)
 - [Badminton Court Trouble-shooting – Poste.io Staging](badminton_court/Docs/Trouble-shooting/Poste.io%20Setup%20Wizard%20&%20SMTP%20Auth%20(Staging).md)
-- [Badminton Court Trouble-shooting – June 2026 Fixes](badminton_court/Docs/Trouble-shooting/June%202026%20Fixes.md)
-
+- [Badminton Court Trouble-shooting – Social Media App Config](badminton_court/Docs/Trouble-shooting/Social%20Media%20App%20Configuration%20Menu.md)
+- [Badminton Court Trouble-shooting – DB Permission Repair](badminton_court/Docs/Trouble-shooting/Database%20Permission%20Repair%20Automation.md)
+- [Badminton Court Trouble-shooting – LB Health Check Host Headers](badminton_court/Docs/Trouble-shooting/Load%20Balancer%20Health%20Check%20Host%20Headers.md)
+- [Badminton Court Trouble-shooting – Deploy Script Image Tag](badminton_court/Docs/Trouble-shooting/Deployment%20Script%20Image%20Tag%20Reliability.md)
+- [Badminton Court Trouble-shooting – SMTP Check Timeout](badminton_court/Docs/Trouble-shooting/SMTP%20Check%20Timeout%20Fix.md)
+- [Badminton Court Trouble-shooting – Cypress Env Resolution](badminton_court/Docs/Trouble-shooting/Cypress%20Environment%20Variable%20Resolution.md)
+- [Badminton Court Trouble-shooting – /court Routing](badminton_court/Docs/Trouble-shooting/court%20Path%20Routing%20Correction.md)
+- [Badminton Court Trouble-shooting – Profile Completion Notice](badminton_court/Docs/Trouble-shooting/User%20Profile%20Completion%20Notice.md)
 ---
 
 ## 📝 Maintenance
