@@ -101,6 +101,34 @@ Poste.io's STARTTLS on port 587 is unreliable. Always use port 465 (SMTPS) with 
 Roadmap documents track high‑level progress and architectural decisions. Detailed problem/solution histories belong in separate `Docs/Trouble-shooting/` files. Link to those files from the roadmap.
 ---
 
+## 📦 ghcr.io (GitHub Container Registry) Management
+
+The project uses `ghcr.io` to store built Docker images for all apps (e.g., `humrine_site-web`, `badminton_court-web`).
+
+### Storage & Limits
+- **Public images** (the default for this project) have **unlimited storage and unlimited pull bandwidth**.
+- There is **no limit** on the number of tags (e.g., `sha-9bbe8e1`) you can push to a public repository.
+- Old tags **never expire** and persist indefinitely unless manually deleted.
+
+### Maintenance
+- While there is no cost, it is recommended to occasionally clean up very old tags to keep the package list tidy and reduce confusion.
+- Tags can be deleted via:
+  - The GitHub UI: Packages → select package → click the version → Delete.
+  - The GitHub API (using a `GITHUB_TOKEN` with `write:packages` scope).
+- **Rule of thumb**: Keep the last 5–10 successful `sha-*` tags and any manually tagged `latest` versions. Delete older, unused builds.
+
+### Command Example (List versions to delete)
+```bash
+curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+  "https://api.github.com/user/packages/container/humrine_site-web/versions" \
+  | grep -o '"id":[0-9]*' | cut -d: -f2
+```
+*(Be careful – deleting a tag removes that image permanently and cannot be undone.)*
+
+## Note to AI Assistants: 
+- **You need to remind the user about cleaning up the images.** 
+- **Ask the user if he wants to do it now or when.**
+
 ## 🔗 Quick Reference Links
 
 - [AI Behavior Safety Protocol](dev-infra/Docs/memory/Memory_AIBehaviorSafetyProtocol.md)
