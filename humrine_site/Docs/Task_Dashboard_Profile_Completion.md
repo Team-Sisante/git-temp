@@ -64,10 +64,22 @@ model to grant.
 
 Delivered as `phase1_dashboard_profile.zip` with a `README.md` covering exactly what's new vs. modified.
 
-### Phase 2 — Gate engagement actions behind profile completion
-- [ ] Pending — Apply `@require_completed_profile` to `engagement.views.add_comment`
-- [ ] Pending — Apply `@require_completed_profile` to `engagement.views.toggle_reaction`
-- [ ] Pending — Update `engagement` AJAX JS to handle the redirect-to-profile-completion response sensibly (not just silently fail)
+### Phase 2 — Gate engagement actions behind profile completion — ✅ DONE
+- [x] Done — Apply `@require_completed_profile` to `engagement.views.add_comment`
+- [x] Done — Apply `@require_completed_profile` to `engagement.views.toggle_reaction`
+- [x] Done — Update `engagement` AJAX JS to handle the redirect-to-profile-completion response sensibly (not just silently fail)
+
+**Found at the start of this phase: Phase 1 was never actually committed to the real repo.** Re-applied it from the saved zip before building Phase 2 on top, so this round's delivery is Phase 1 + Phase 2 combined in one zip.
+
+**Also found: `engagement/static/` (the AJAX JS/CSS) was missing from the real repo entirely** — only the Python side of the original comments/reactions feature had landed. The template's `{% static %}` tags were 404ing; recreated both files, with this phase's `profile_incomplete` handling built in from the start.
+
+**`profiles/decorators.py` needed real changes, not just an `@apply`:** the gated views (`add_comment`, `toggle_reaction`) are POST-only AJAX/API endpoints, not page views — badminton_court's original decorator pattern (built only for gating a real page view) would have broken in two ways here: (1) stashing the API endpoint's own URL as the redirect-back target, which 405s on retry since it's POST-only — fixed by preferring `HTTP_REFERER` for non-GET requests; (2) a blind 302 redirect on an AJAX request gets silently followed by `fetch()`, handing the caller HTML where it expected JSON — fixed with a JSON `profile_incomplete` response instead.
+
+**Found and fixed a real regression:** applying the gating broke 7 of the 11 existing `engagement` tests (confirmed by running the suite before fixing — 4 failures + 3 errors), since none of them gave their test users a completed profile. Fixed `setUp()` to create completed profiles for the existing users, and added 8 new tests specifically for the gating behavior (`EngagementProfileGatingTestCase`).
+
+**Verification:** full repo-wide suite now 42/42 passing (was 34 after Phase 1; +8 net from engagement's growth). Manual end-to-end via test client covering AJAX blocking, the Referer-based redirect-back fix, non-AJAX redirects, and the complete blocked→complete-profile→retry→succeed loop landing back on the exact originating page. **JS itself not run in an actual browser** — reasoned through and mirrors the existing success-path code exactly, but only the Python side was exercised.
+
+Delivered as `phase1_and_2_dashboard_profile_gating.zip` (combined, since Phase 1 wasn't separately committed) with a `README.md` covering both phases in detail.
 
 ### Phase 3 — Comment edit/delete (new perk)
 - [ ] Pending — Add `edit_comment` / `delete_comment` views, author-only check
