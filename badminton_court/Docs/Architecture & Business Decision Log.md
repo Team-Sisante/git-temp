@@ -58,7 +58,7 @@
 - **Decision:** Remove all environment-specific Django settings modules (`dev.py`, `prod.py`) and move to a **unified settings architecture**.
 - **Reasoning:** 
     1. Removes configuration "split-brain" where settings were scattered between code and environment variables.
-    2. Enforces strict environment variable enforcement via `get_env_variable` in `base.py`.
+    2. Enforces strict environment variable enforcement via `require_env` in `base.py`.
     3. Simplifies Docker Compose files by relying purely on `.env` file injection, eliminating redundant environment declarations.
 
 ## ADR-007: Binary Artifact Deployment Strategy
