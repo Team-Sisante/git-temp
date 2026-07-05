@@ -59,7 +59,7 @@
    ALLOWED_HOSTS=localhost,127.0.0.1,web
    CYPRESS_BASEURL=https://aeropace-portal.loca.lt # this will be replaced dynamically on runtime
    CYPRESS_INTERNAL_baseUrl=http://localhost:8000
-   CYPRESS_headed=true
+   CYPRESS_HEADED=true
 
    PYTHONDONTWRITEBYTECODE=1
    PYTHONUNBUFFERED=1
@@ -156,7 +156,7 @@
    ALLOWED_HOSTS=localhost,127.0.0.1,web
    CYPRESS_BASEURL=https://aeropace-portal.loca.lt # this will be replaced dynamically on runtime
    CYPRESS_INTERNAL_baseUrl=http://web:8000
-   CYPRESS_headed=true
+   CYPRESS_HEADED=true
 
    PYTHONDONTWRITEBYTECODE=1
    PYTHONUNBUFFERED=1
