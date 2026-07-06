@@ -145,11 +145,11 @@ curl -s https://humrine.com/court-staging/api/test/check-smtp-auth/
 # Should return: {"status":"ok","protocol":"SSL:465","host":"mail-staging"}
 
 # 3. Domains exist
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console domain:list
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console domain:list
 # Should show: humrine.com
 
 # 4. Admin mailbox exists
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console email:list
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console email:list
 # Should show: aeropaceadmin@humrine.com
 
 # 5. Cypress test passes

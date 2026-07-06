@@ -18,7 +18,7 @@ The deploy script creates the `humrine.com` domain via the Poste.io console comm
 
 **Diagnostic:**
 ```bash
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console domain:list
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console domain:list
 # If this shows humrine.com (or mail.humrine.com), the setup wizard will 500
 ```
 
@@ -27,7 +27,7 @@ Same pattern — deploy script creates `aeropaceadmin@humrine.com` via console. 
 
 **Diagnostic:**
 ```bash
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console email:list
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console email:list
 # If this shows aeropaceadmin@humrine.com, the setup wizard will 500
 ```
 
@@ -68,7 +68,7 @@ The mail container's `mem_limit: 256m` was too low. At 256MB, Rspamd was OOM-kil
 
 **Diagnostic:**
 ```bash
-sudo docker stats --no-stream badminton-staging-mail-staging-1
+sudo docker stats --no-stream badminton_court-mail-staging-1
 # MEM USAGE / LIMIT should be well under 512MiB
 ```
 
@@ -169,14 +169,14 @@ If the setup wizard still 500s after applying all fixes, manually delete the dom
 
 ```bash
 # Delete all mailboxes (none should exist, but verify)
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console email:list
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console email:list
 
 # Delete all domains
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console domain:remove humrine.com
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console domain:remove mail.humrine.com
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console domain:remove humrine.com
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console domain:remove mail.humrine.com
 
 # Verify both are gone
-sudo docker exec --user 8 badminton-staging-mail-staging-1 /opt/admin/bin/console domain:list
+sudo docker exec --user 8 badminton_court-mail-staging-1 /opt/admin/bin/console domain:list
 # Should be empty
 ```
 
@@ -196,7 +196,7 @@ docker ps --filter name=mail-staging
 # STATUS: Up X seconds (healthy)
 
 # 3. Memory is under 512MB
-docker stats --no-stream badminton-staging-mail-staging-1
+docker stats --no-stream badminton_court-mail-staging-1
 # MEM USAGE / LIMIT should be well under 512MiB
 
 # 4. DNS resolves

@@ -25,7 +25,7 @@ def _reset_container_data(self, container_name):
 In staging, the Django container:
 1. Doesn't have `docker-compose` installed (slim binary image)
 2. Doesn't have access to the host's Docker daemon (no `/var/run/docker.sock` mount)
-3. Uses the wrong container name (`mail-test` vs `badminton-staging-mail-staging-1`)
+3. Uses the wrong container name (`mail-test` vs `badminton_court-mail-staging-1`)
 4. Uses the wrong volume name (`badminton_court_poste_data` vs the staging volume)
 
 ### Diagnostic Steps

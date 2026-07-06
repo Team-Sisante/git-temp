@@ -70,8 +70,8 @@ All resource names used in this setup. Reference this table when recreating or d
 | **Frontend Rule**          | `humrine-https-frontend`         | HTTPS on port 443                    |
 | **Static IP**              | `humrine-static-ip`              | Reserved global static IP            |
 | **SSL Certificate**        | `humrine-managed-cert`           | Google-managed for `humrine.com`     |
-| **Backend (staging)**      | `badminton-staging-backend`      | Routes to named port `staging:8443`  |
-| **Backend (production)**   | `badminton-production-backend`   | Routes to named port `production:9443`|
+| **Backend (staging)**      | `badminton_court-backend`      | Routes to named port `staging:8443`  |
+| **Backend (production)**   | `badminton_court-backend`   | Routes to named port `production:9443`|
 | **Health Check (staging)** | `staging-health-check`           | HTTPS on port `8443`, path `/`       |
 | **Health Check (production)**| `production-health-check`      | HTTPS on port `9443`, path `/`       |
 | **Firewall Rule**          | `allow-lb-health-checks`         | TCP `8443`,`9443` from LB ranges    |
@@ -263,7 +263,7 @@ Click **Backend configuration** in the left sidebar.
 
    | Field              | Value / Action                          |
    |--------------------|-----------------------------------------|
-   | **Name**           | `badminton-staging-backend`             |
+   | **Name**           | `badminton_court-backend`             |
    | **Description**    | (optional) `Staging app on port 8443`   |
    | **Backend type**   | `Instance group`                        |
    | **Protocol**       | `HTTPS`                                 |
@@ -298,7 +298,7 @@ Click **Backend configuration** in the left sidebar.
 
    | Field              | Value / Action                            |
    |--------------------|-------------------------------------------|
-   | **Name**           | `badminton-production-backend`            |
+   | **Name**           | `badminton_court-backend`            |
    | **Description**    | (optional) `Production app on port 9443`  |
    | **Backend type**   | `Instance group`                          |
    | **Protocol**       | `HTTPS`                                   |
@@ -332,7 +332,7 @@ Click **Routing rules** in the left sidebar.
 1. Select **"Advanced host and path rule"** mode (not "Simple host and path rule").
 
 2. **Set the default backend service:**
-   - Select `badminton-production-backend` as the default.
+   - Select `badminton_court-backend` as the default.
    - This handles `humrine.com` and any unmatched hosts/paths.
 
 3. **Add Host Rule #1 (Staging):**
@@ -340,22 +340,22 @@ Click **Routing rules** in the left sidebar.
    - **Hosts:** Enter `staging.humrine.com`
    - Under the path matcher, set:
      - **Path:** `/*`
-     - **Backend:** Select `badminton-staging-backend`
+     - **Backend:** Select `badminton_court-backend`
 
 4. **Add Host Rule #2 (Production app):**
    - Click **Add host and path rule**.
    - **Hosts:** Enter `app.humrine.com`
    - Under the path matcher, set:
      - **Path:** `/*`
-     - **Backend:** Select `badminton-production-backend`
+     - **Backend:** Select `badminton_court-backend`
 
 **Summary of routing rules:**
 
 | Host                      | Path  | Backend Service                |
 |---------------------------|-------|--------------------------------|
-| `staging.humrine.com`     | `/*`  | `badminton-staging-backend`    |
-| `app.humrine.com`         | `/*`  | `badminton-production-backend` |
-| (default — all others)    | `/*`  | `badminton-production-backend` |
+| `staging.humrine.com`     | `/*`  | `badminton_court-backend`    |
+| `app.humrine.com`         | `/*`  | `badminton_court-backend` |
+| (default — all others)    | `/*`  | `badminton_court-backend` |
 
 ### Step 3.6: Review and Create
 

@@ -117,7 +117,7 @@ This ensures secrets are never persisted on the VM filesystem.
 - **DESTRUCTIVE:** Deletes ALL staging mail data (mailboxes, domains, settings, server.ini)
 - Asks for confirmation: "Are you absolutely sure? Type 'yes' to confirm:"
 - If confirmed:
-  1. Stops and removes the `badminton-staging-mail-staging-1` container
+  1. Stops and removes the `badminton_court-mail-staging-1` container
   2. Removes the `badminton-staging_poste_data_staging` volume
   3. Verifies the volume is actually gone
   4. Recreates the container with a fresh volume (using secure env export)

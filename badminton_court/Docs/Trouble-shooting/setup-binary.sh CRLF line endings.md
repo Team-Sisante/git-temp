@@ -138,7 +138,7 @@ After redeployment:
 ```bash
 # Web container should be Up, not Exited
 ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
-  "sudo docker ps --filter name=badminton-staging-web-staging"
+  "sudo docker ps --filter name=badminton_court-web-staging"
 
 # Verify script has LF endings inside the container
 ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
