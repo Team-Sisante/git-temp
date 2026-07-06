@@ -534,7 +534,7 @@ In each social provider's developer console, add the subdomain callback URLs:
 
 After deploying with the new `APP_DOMAIN`, run on the VM:
 ```bash
-sudo docker exec badminton-staging-web-staging-1 python manage.py setup_site
+sudo docker exec badminton_court-web-staging-1 python manage.py setup_site
 ```
 This reads `APP_DOMAIN` from the container's environment and updates the Django `Site`
 object, which `django-allauth` uses to build callback URLs.

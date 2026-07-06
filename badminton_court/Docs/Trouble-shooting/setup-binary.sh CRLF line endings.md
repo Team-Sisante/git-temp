@@ -4,7 +4,7 @@
 ## Troubleshooting container crash due to CRLF line endings in shell scripts
 
 ### Symptom
-The `badminton-staging-web-staging-1` container exits immediately with:
+The `badminton_court-web-staging-1` container exits immediately with:
 ```
 exec /usr/local/bin/setup-binary.sh: no such file or directory
 Exited (255) 18 minutes ago
@@ -142,7 +142,7 @@ ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
 
 # Verify script has LF endings inside the container
 ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
-  "sudo docker exec badminton-staging-web-staging-1 od -c /usr/local/bin/setup-binary.sh | head -1"
+  "sudo docker exec badminton_court-web-staging-1 od -c /usr/local/bin/setup-binary.sh | head -1"
 # Should show: #   !   /   b   i   n   /   b   a   s   h  \n  (no \r)
 ```
 

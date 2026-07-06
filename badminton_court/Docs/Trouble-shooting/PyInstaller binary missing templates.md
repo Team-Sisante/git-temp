@@ -61,7 +61,7 @@ With `APP_DIRS: True` in Django's `TEMPLATES` setting, Django looks for template
 4. **Verify templates are bundled in the running binary:**
    ```bash
    ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
-     "sudo docker exec badminton-staging-web-staging-1 find /tmp/_MEI* -name 'index.html' -path '*court_management*'"
+     "sudo docker exec badminton_court-web-staging-1 find /tmp/_MEI* -name 'index.html' -path '*court_management*'"
    ```
    If this returns nothing, the templates aren't bundled.
 
@@ -127,7 +127,7 @@ curl -sk -o /dev/null -w "HTTP %{http_code}\n" https://humrine.com/court-staging
 
 # 2. Templates should be in the binary
 ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
-  "sudo docker exec badminton-staging-web-staging-1 find /tmp/_MEI* -name 'index.html' -path '*court_management*'"
+  "sudo docker exec badminton_court-web-staging-1 find /tmp/_MEI* -name 'index.html' -path '*court_management*'"
 # Should return: /tmp/_MEIxxxx/court_management/templates/court_management/index.html
 ```
 

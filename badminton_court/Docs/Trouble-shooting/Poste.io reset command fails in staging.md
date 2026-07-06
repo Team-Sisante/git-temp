@@ -33,14 +33,14 @@ In staging, the Django container:
 1. **Check if Docker is available inside the staging container:**
    ```bash
    ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
-     "sudo docker exec badminton-staging-web-staging-1 which docker-compose"
+     "sudo docker exec badminton_court-web-staging-1 which docker-compose"
    # If empty, docker-compose isn't installed in the container
    ```
 
 2. **Check the reset command's behavior:**
    ```bash
    ssh -i gocd-server/secrets/agent-key xmione@35.198.231.9 \
-     "sudo docker exec badminton-staging-web-staging-1 python manage.py reset_posteio_db"
+     "sudo docker exec badminton_court-web-staging-1 python manage.py reset_posteio_db"
    # If it returns errors about docker-compose not found, that's the bug
    ```
 

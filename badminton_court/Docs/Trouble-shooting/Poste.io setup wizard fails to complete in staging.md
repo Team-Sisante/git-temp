@@ -89,7 +89,7 @@ The `requests` library in the PyInstaller binary respected the `REQUESTS_CA_BUND
 
 **Diagnostic:**
 ```bash
-sudo docker exec badminton-staging-web-staging-1 /app/badminton_court_linux reset_posteio_db_staging
+sudo docker exec badminton_court-web-staging-1 /app/badminton_court_linux reset_posteio_db_staging
 # If you see "SSLCertVerificationError", the SSL fix is not applied
 ```
 
