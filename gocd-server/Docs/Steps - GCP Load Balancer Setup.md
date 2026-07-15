@@ -1,0 +1,315 @@
+# Load Balancer Setup (GCP External Application Load Balancer)
+
+This guide covers the **GCP External Application Load Balancer** configuration used to route traffic to multiple applications running on a single GCP VM.
+
+The entire ecosystem uses a **single primary domain**, `humrine.com`. Routing is handled through a combination of **host‑based** (subdomains) and **path‑based** (URL prefixes) rules to direct traffic to the correct Django containers (Humrine, Badminton Court, and their staging environments).
+
+---
+
+## 1. Routing Logic (The Big Picture)
+
+The load balancer routes traffic according to the following table:
+
+| URL | Backend | Application |
+|-----|---------|-------------|
+| `humrine.com` | `humrine-backend` | Humrine production site (Django) |
+| `staging.humrine.com` | `humrine-staging-backend` | Humrine staging site (Django) |
+| `humrine.com/court` | `court-backend` | Badminton Court production (Django) |
+| `humrine.com/court-staging` | `court-staging-backend` | Badminton Court staging (Django) |
+| `aeropace.humrine.com` | `aeropace-root-backend` | Alias → same as `humrine.com/court` (Badminton Court production) |
+| `staging.aeropace.humrine.com` | `aeropace-staging-root-backend` | Alias → same as `humrine.com/court-staging` (Badminton Court staging) |
+
+**Key points:**
+- **Only one primary domain** (`humrine.com`) is used for all services.
+- `aeropace.humrine.com` and `staging.aeropace.humrine.com` are **domain aliases** that map directly to the Badminton Court app (production and staging respectively).
+- All subdomains and paths are served by the same load balancer on the same GCP VM.
+
+---
+
+## 2. Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| **Unmanaged Instance Group** | Contains the single GCP VM. Named ports map logical names (e.g., `production`, `staging`, `court`) to actual host ports (e.g., `8443`, `9443`). |
+| **Health Checks** | HTTP or TCP probes that verify each backend service is alive. |
+| **Backend Services** | Each named port gets a backend service, which ties a health check to the instance group. |
+| **URL Map** | Defines host rules and path rules to route requests to the correct backend. |
+| **SSL Certificate** | Google‑managed certificate covering all domains for a given app (e.g., `*.humrine.com`, `aeropace.humrine.com`, etc.). |
+| **HTTPS Proxy** | Terminates TLS and forwards requests to the URL map. |
+| **HTTPS Forwarding Rule** | Binds the static IP address to the HTTPS proxy on port `443`. |
+| **HTTP→HTTPS Redirect** | Enforces HTTPS by redirecting all HTTP (port `80`) traffic to HTTPS. |
+
+---
+
+## 3. Files Involved
+
+| File | Purpose |
+|------|---------|
+| `gocd-server/Scripts/setup-load-balancer.js` | The main script that creates/updates all LB components. |
+| `gocd-server/Scripts/loadbalancer.json` | Configuration file that defines backends, domains, and ports per app. |
+| `.env.docker` | Environment variables that supply values like `WEB_HTTPS_PORT_PRODUCTION`, `HUMRINE_DOMAIN`, etc. |
+
+---
+
+## 4. Prerequisites
+
+Before running the script, ensure the following environment variables are defined in `.env.docker`:
+
+| Variable | Purpose |
+|----------|---------|
+| `GCP_PROJECT_ID` | GCP project ID. |
+| `GCP_ZONE` | GCP zone where the VM resides. |
+| `GCP_VM_NAME` | Name of the VM in the instance group. |
+| `HUMRINE_DOMAIN` | Main domain (e.g., `humrine.com`). |
+| `WEB_HTTPS_PORT_PRODUCTION` | Host port for the production Humrine app. |
+| `WEB_HTTPS_PORT_STAGING` | Host port for the staging Humrine app. |
+| `NGINX_PRODUCTION_HOST_PORT` | Host port for the production Badminton Court. |
+| `NGINX_STAGING_HOST_PORT` | Host port for the staging Badminton Court. |
+| `WEB_HOST_PORT_BADMINTON_PRODUCTION` | Host port for the production Badminton Court (used for `aeropace` alias). |
+| `WEB_HOST_PORT_BADMINTON_STAGING` | Host port for the staging Badminton Court (used for `aeropace-staging` alias). |
+| ... (any other port/domain variables referenced in your `loadbalancer.json`) |
+
+---
+
+## 5. Configuration File (`loadbalancer.json`)
+
+The `humrine_site` entry from `loadbalancer.json` contains the full routing configuration. Below is the **exact** configuration used in the script:
+
+```json
+{
+  "humrine_site": {
+    "domain": "${HUMRINE_DOMAIN}",
+    "defaultBackend": "humrine-backend",
+    "certDomains": [
+      "${HUMRINE_DOMAIN}",
+      "staging.${HUMRINE_DOMAIN}",
+      "app.${HUMRINE_DOMAIN}",
+      "aeropace.${HUMRINE_DOMAIN}",
+      "staging.aeropace.${HUMRINE_DOMAIN}"
+    ],
+    "dnsZone": "${HUMRINE_DNS_ZONE}",
+    "instanceGroup": "${HUMRINE_INSTANCE_GROUP}",
+    "lbName": "${HUMRINE_LB_NAME}",
+    "staticIpName": "${HUMRINE_STATIC_IP_NAME}",
+    "certName": "${HUMRINE_CERT_NAME}",
+    "httpsProxyName": "${HUMRINE_HTTPS_PROXY_NAME}",
+    "httpsFwdRule": "${HUMRINE_HTTPS_FWD_RULE}",
+    "httpRedirectMap": "${HUMRINE_HTTP_REDIRECT_MAP}",
+    "httpProxyName": "${HUMRINE_HTTP_PROXY_NAME}",
+    "httpFwdRule": "${HUMRINE_HTTP_FWD_RULE}",
+    "fwRuleName": "${HUMRINE_FW_RULE_NAME}",
+    "backends": [
+      {
+        "name": "humrine-staging-backend",
+        "namedPort": "staging",
+        "port": "${WEB_HTTPS_PORT_STAGING}",
+        "healthCheck": "staging-health-check",
+        "host": "staging.${HUMRINE_DOMAIN}",
+        "pathMatcher": "staging-matcher"
+      },
+      {
+        "name": "court-staging-backend",
+        "namedPort": "court-staging",
+        "port": "${NGINX_STAGING_HOST_PORT}",
+        "healthCheck": "court-staging-health-check",
+        "hosts": ["${HUMRINE_DOMAIN}"],
+        "pathPrefix": "/court-staging"
+      },
+      {
+        "name": "court-backend",
+        "namedPort": "court",
+        "port": "${NGINX_PRODUCTION_HOST_PORT}",
+        "healthCheck": "court-health-check",
+        "hosts": ["${HUMRINE_DOMAIN}"],
+        "pathPrefix": "/court"
+      },
+      {
+        "name": "humrine-backend",
+        "namedPort": "production",
+        "port": "${WEB_HTTPS_PORT_PRODUCTION}",
+        "healthCheck": "production-health-check",
+        "host": "${HUMRINE_DOMAIN}",
+        "pathMatcher": "production-matcher"
+      },
+      {
+        "name": "aeropace-root-backend",
+        "namedPort": "court",
+        "port": "${WEB_HOST_PORT_BADMINTON_PRODUCTION}",
+        "healthCheck": "aeropace-health-check",
+        "host": "aeropace.${HUMRINE_DOMAIN}",
+        "pathMatcher": "aeropace-root-matcher",
+        "healthCheckHost": "${HUMRINE_DOMAIN}",
+        "healthCheckPath": "/court/",
+        "healthCheckProtocol": "tcp"
+      },
+      {
+        "name": "aeropace-staging-root-backend",
+        "namedPort": "court-staging",
+        "port": "${WEB_HOST_PORT_BADMINTON_STAGING}",
+        "healthCheck": "aeropace-staging-health-check",
+        "host": "staging.aeropace.${HUMRINE_DOMAIN}",
+        "pathMatcher": "aeropace-staging-root-matcher",
+        "healthCheckHost": "${HUMRINE_DOMAIN}",
+        "healthCheckPath": "/court-staging/",
+        "healthCheckProtocol": "tcp"
+      }
+    ]
+  }
+}
+```
+
+### Backend Fields Explained
+
+| Field | Description |
+|-------|-------------|
+| `name` | Unique name for the backend service (e.g., `humrine-staging-backend`). |
+| `namedPort` | Logical port name defined on the instance group (e.g., `production`, `staging`, `court`). |
+| `port` | Actual host port number (resolved from `.env.docker`). |
+| `healthCheck` | Name of the health check resource. |
+| `host` / `hosts` | Domain(s) that this backend handles. |
+| `pathPrefix` | URL path prefix that routes to this backend (e.g., `/court`). If omitted, it becomes a default backend for that host. |
+| `pathMatcher` | (Optional) Name of the path matcher in the URL map. |
+| `healthCheckProtocol` | `http` or `tcp` (defaults to `http`). |
+| `healthCheckPath` | Override the health check path (defaults to `pathPrefix + '/'`). |
+| `healthCheckHost` | Host header sent with health checks. |
+
+---
+
+## 6. DNS Records
+
+The script creates/updates the following DNS A records in Cloud DNS (all pointing to the same static IP address assigned to the load balancer):
+
+- `humrine.com`
+- `staging.humrine.com`
+- `app.humrine.com`
+- `aeropace.humrine.com`
+- `staging.aeropace.humrine.com`
+
+These are derived from the `certDomains` array in `loadbalancer.json`. The script ensures each of these subdomains has an A record pointing to the load balancer's static IP.
+
+---
+
+## 7. Usage
+
+### From the Interactive Menu (recommended)
+
+Navigate to the GoCD management menu and select:
+
+```
+6. GCP VM SETUP
+  6.30. Setup Load Balancer (Generic)
+```
+
+The script will ask for confirmation and then rebuild the load balancer for `humrine_site`. It will prompt you to confirm if you want to delete and recreate the existing load balancer.
+
+### From the Command Line
+
+```bash
+node Scripts/setup-load-balancer.js <app_name>
+```
+
+Example:
+
+```bash
+node Scripts/setup-load-balancer.js humrine_site
+```
+
+Supported app names are defined in `loadbalancer.json` (currently `humrine_site` and `badminton_court`).
+
+---
+
+## 8. Execution Steps (What the Script Does)
+
+The script follows this exact order:
+
+1. **Instance Group** – Ensures the VM is in the instance group and named ports are set correctly.
+2. **Health Checks** – Creates or updates health checks (HTTP/TCP) for each backend.
+3. **Backend Services** – Creates backend services and attaches the correct health checks.
+4. **Static IP** – Reserves or reuses a global static IP address.
+5. **DNS Records** – Updates Cloud DNS A records for **all domains in `certDomains`**, including `aeropace.humrine.com` and `staging.aeropace.humrine.com`, pointing them to the static IP.
+6. **Rebuild (if confirmed)** – Deletes existing forwarding rules, proxies, and URL maps.
+7. **URL Map** – Builds host and path rules from the JSON config (including all aliases and path prefixes).
+8. **Orphan Cleanup** – Deletes any backend services no longer defined in the config.
+9. **HTTPS Proxy** – Creates the HTTPS proxy and attaches an initial certificate.
+10. **HTTPS Forwarding Rule** – Binds the static IP to the HTTPS proxy on port `443`.
+11. **SSL Certificate** – Creates a Google‑managed SSL certificate covering **all domains in `certDomains`**. The script **attaches the certificate to the proxy before waiting** for it to become `ACTIVE` – this is required for GCP to validate and provision the certificate.
+12. **HTTP→HTTPS Redirect** – Sets up a forwarding rule on port `80` that redirects all traffic to HTTPS.
+13. **Firewall Rules** – Ensures firewall rules allow health check probes from GCP and traffic from the internet.
+
+---
+
+## 9. Self‑Healing & Important Behaviours
+
+The script is designed to be **idempotent** and **self‑healing**:
+
+- **Health check protocol mismatch** – If a health check exists with the wrong protocol (e.g., HTTP instead of TCP), it will delete and recreate it.
+- **Orphaned backends** – Any backend service defined in GCP but missing from `loadbalancer.json` will be deleted (unless still referenced by the URL map).
+- **HTTP redirect conflicts** – If another forwarding rule is using the same static IP on port `80`, the script will delete the conflicting rule and recreate the intended one.
+- **Certificate provisioning** – If a certificate fails to become `ACTIVE`, the script will remove it from the proxy, delete it, and retry up to 3 times.
+
+### ⚠️ Critical: Certificate Creation Order
+
+GCP **requires** that a managed SSL certificate is **attached to an active HTTPS proxy** before it will attempt to validate and provision it. The script follows this correct order:
+
+1. Create the certificate.
+2. **Attach it to the HTTPS proxy immediately** (alongside any existing certificates so HTTPS traffic is not interrupted).
+3. Wait for the certificate status to become `ACTIVE`.
+4. Remove the old certificate(s) from the proxy, keeping only the new one.
+
+This avoids the common `FAILED_NOT_VISIBLE` error where certificates remain stuck in provisioning because they were never attached to a load balancer.
+
+---
+
+## 10. Troubleshooting
+
+### Certificate status stuck in `PROVISIONING`
+
+- Ensure the domains in `certDomains` are correctly pointing to the load balancer IP (check DNS records for `aeropace.humrine.com` and `staging.aeropace.humrine.com` as well).
+- Verify that the load balancer's HTTPS forwarding rule is active and reachable from the internet.
+- Run the script again – it will retry certificate creation and attach it properly.
+
+### HTTP→HTTPS redirect not working
+
+The script automatically cleans up any conflicting forwarding rules that use the same static IP on port `80`. If you still have issues, manually check for conflicting rules:
+
+```bash
+gcloud compute forwarding-rules list --global --project=$GCP_PROJECT_ID
+```
+
+### Backend services not receiving traffic
+
+- Check that the VM's named ports match the backend service `namedPort` values.
+- Verify that the firewall rules allow traffic from the GCP health check ranges (`35.191.0.0/16` and `130.211.0.0/22`).
+- Ensure the containers are actually listening on the expected host ports.
+- For `aeropace` aliases, confirm the `healthCheckPath` is correctly set to `/court/` or `/court-staging/`.
+
+### Orphaned backend services left behind
+
+The script runs a cleanup step that deletes any backend services not defined in the JSON. If you want to keep an old backend, add it back to the JSON config first.
+
+### Routing not working for `aeropace.humrine.com`
+
+- Confirm that the DNS A record for `aeropace.humrine.com` exists and points to the load balancer IP.
+- Check the URL map to ensure the host rule `aeropace.humrine.com` is correctly mapped to `aeropace-root-backend`.
+- Verify the `namedPort` (`court`) matches the actual port where the Badminton Court container is listening.
+
+---
+
+## 11. Security Considerations
+
+- The load balancer uses **Google‑managed SSL certificates** – automatic renewal is handled by GCP.
+- **All traffic is redirected to HTTPS** – HTTP traffic is not served.
+- Firewall rules are **restrictive**: they only allow incoming traffic from the GCP health check ranges and the public internet (for the load balancer's forwarding rule).
+- The VM itself has a **firewall rule** that only allows traffic from the load balancer's IP range (not directly from the internet).
+
+---
+
+## 12. Related Documentation
+
+- `Steps - GCP Deployment.md` – Setting up the GCP project and VM.
+- `Steps - GCP Domain Setup.md` – DNS and domain configuration.
+- `Environment-Setup.md` – General environment variable setup.
+
+---
+
+*This document was generated from the actual source code in `gocd-server/Scripts/setup-load-balancer.js` and `loadbalancer.json`.*
