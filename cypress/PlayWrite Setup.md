@@ -292,7 +292,8 @@ Then('I should see the booking confirmation', async function () {
 
 ## 9. Using `@playwright/test` (Alternative to Cucumber)
 
-If you prefer Playwright’s own test runner with its interactive UI (comparable to `npx cypress open`), you can write tests in plain JavaScript/TypeScript without Gherkin.
+If you prefer Playwright’s own test runner with its interactive UI (comparable to `npx cypress open`), you can write tests in plain JavaScript/TypeScript without Gherkin.  
+**Important:** Playwright’s built‑in runner does **not** understand `.feature` files; it only works with `*.spec.js`/`*.spec.ts`. To keep using Gherkin, you must use `npx cucumber-js`. The `--ui` mode is exclusive to Playwright’s own test syntax.
 
 ### 9.1 Installation
 
@@ -398,7 +399,28 @@ The Playwright test runner will then look for its configuration in `playwright.c
 
 ---
 
-## 10. Video Recording and Post‑Processing (Mimicking Cypress)
+## 10. Running Cucumber Features (CLI)
+
+Since you are using Cucumber, not Playwright’s own test runner, you run your Gherkin scenarios with `npx cucumber-js`. Below are the most common commands.
+
+| Action | Command |
+|--------|---------|
+| Run all feature files | `npx cucumber-js` |
+| Run a single feature file | `npx cucumber-js features/google-signup.feature` |
+| Run multiple feature files | `npx cucumber-js features/file1.feature features/file2.feature` |
+| Run a specific scenario by line number | `npx cucumber-js features/google-signup.feature:12` |
+| Run only scenarios with a certain tag (e.g. `@smoke`) | `npx cucumber-js --tags @smoke` |
+| List all scenarios without executing (dry‑run) | `npx cucumber-js --dry-run` |
+| Run scenarios in parallel (e.g. 2 workers) | `npx cucumber-js --parallel 2` |
+| Show a progress bar instead of detailed output | `npx cucumber-js --format progress-bar` |
+| Generate an HTML report | `npx cucumber-js --format html:reports/report.html` |
+
+All these commands respect your `cucumber.cjs` configuration and the shared hooks in `features/support/hooks.js`.  
+The `--ui` flag (`npx playwright test --ui`) does **not** work with Gherkin files; it is only for Playwright’s own test syntax (`.spec.js`). For a visual interactive experience, keep `headless: false` in the hooks – a browser window will open and you can watch the test run.
+
+---
+
+## 11. Video Recording and Post‑Processing (Mimicking Cypress)
 
 The shared hooks file (`features/support/hooks.js`) already records videos and post‑processes them with `ffmpeg` after all scenarios finish. This exactly mirrors the behaviour in your `cypress.config.js`.
 
@@ -406,18 +428,18 @@ If you use `@playwright/test`, you can configure video recording in `playwright.
 
 ---
 
-## 11. Handling Self‑Signed Certificates
+## 12. Handling Self‑Signed Certificates
 
 - `ignoreHTTPSErrors: true` is already set in the browser context.
 - Alternatively, set the environment variable `NODE_EXTRA_CA_CERTS` to your CA bundle file.
 
 ---
 
-## 12. Using a Persistent Session & Chrome Profiles
+## 13. Using a Persistent Session & Chrome Profiles
 
 The script uses `chromium.launchPersistentContext` with a `userDataDir`. This creates a real Chrome profile directory that stores cookies, local storage, and extensions. By reusing the same profile, you avoid having to sign in manually every time.
 
-### 12.1 Default Profile Location
+### 13.1 Default Profile Location
 
 In the example, the profile is stored in `./chrome-profile` (relative to the project root). This is a **separate** profile from the one Cypress uses. To avoid having two separate profiles, you can point Playwright directly at your existing Cypress profile:
 
@@ -428,13 +450,13 @@ browser = await chromium.launchPersistentContext(
 );
 ```
 
-### 12.2 Important Rules When Sharing a Profile
+### 13.2 Important Rules When Sharing a Profile
 
 - **Close all Chrome/Cypress windows** before running Playwright – the profile is locked if another process is using it.
 - The Cypress profile (`C:\cypress-chrome-profile`) is created and seeded by your **menu option 16.3**. Once you run that, the profile contains a valid Google session and a pre‑approved app. Playwright can then pick it up directly.
 - If you want to keep the profiles separate (e.g., for different test suites), keep the relative path `./chrome-profile` and manually sign into Google once before running tests.
 
-### 12.3 Forcing the Account Chooser to Appear Every Time
+### 13.3 Forcing the Account Chooser to Appear Every Time
 
 If you want the account chooser to appear in every test run (instead of Google silently redirecting), **delete the profile folder before each test** or use a non‑persistent context:
 
@@ -446,7 +468,7 @@ But be aware that you will need to sign in from scratch each time.
 
 ---
 
-## 13. Tips for Reliability
+## 14. Tips for Reliability
 
 - **Pre‑authorise the app** – run the flow once manually in the same browser profile. After that, consent is remembered, and the test will never hang on the consent screen.
 - **Increase timeouts** – Google’s servers can be slow; a 60‑second timeout for the redirect is reasonable.
@@ -455,7 +477,7 @@ But be aware that you will need to sign in from scratch each time.
 
 ---
 
-## 14. Troubleshooting
+## 15. Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
